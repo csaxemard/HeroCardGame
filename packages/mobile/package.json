@@ -1,0 +1,9 @@
+{
+    "name": "@herocardgame/mobile",
+    "version": "0.1.0",
+    "type": "module",
+    "scripts": {
+        "dev": "expo start",
+        "build": "expo build"
+    }
+}

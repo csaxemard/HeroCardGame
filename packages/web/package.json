@@ -1,0 +1,9 @@
+{
+    "name": "@herocardgame/web",
+    "version": "0.1.0",
+    "type": "module",
+    "scripts": {
+        "dev": "start http://localhost:5173 && vite",
+        "build": "tsc && vite build"
+    }
+}

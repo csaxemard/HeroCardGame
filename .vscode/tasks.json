@@ -1,0 +1,57 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "[Back] Dev",
+            "type": "shell",
+            "command": "cd ${workspaceFolder} && npm run dev:back",
+            "problemMatcher": [ ],
+        },
+        {
+            "label": "[Back] Build",
+            "type": "shell",
+            "command": "cd ${workspaceFolder} && npm run build:back",
+            "problemMatcher": [ ],
+        },
+        {
+            "label": "[Back] Start",
+            "type": "shell",
+            "command": "cd ${workspaceFolder} && npm run start:back",
+            "problemMatcher": [ ],
+        },
+        {
+            "label": "[Web] Dev (default)",
+            "type": "shell",
+            "command": "cd ${workspaceFolder} && npm run dev:web",
+            "problemMatcher": [ ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+        },
+        {
+            "label": "[Web] Build",
+            "type": "shell",
+            "command": "cd ${workspaceFolder} && npm run build:web",
+            "problemMatcher": [ ],
+        },
+        {
+            "label": "[Mobile] Dev",
+            "type": "shell",
+            "command": "cd ${workspaceFolder} && npm run dev:mobile",
+            "problemMatcher": [ ],
+        },
+        {
+            "label": "[Mobile] Build",
+            "type": "shell",
+            "command": "cd ${workspaceFolder} && npm run build:mobile",
+            "problemMatcher": [ ],
+        },
+        {
+            "label": "[Shared] Build",
+            "type": "shell",
+            "command": "cd ${workspaceFolder} && npm run build:shared",
+            "problemMatcher": [ ],
+        },
+    ],
+}

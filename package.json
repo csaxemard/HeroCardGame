@@ -1,0 +1,26 @@
+{
+    "name": "herocardgame",
+    "version": "0.1.0",
+    "author": "csaxemard",
+    "private": true,
+    "type": "module",
+    "workspaces": [
+        "packages/*",
+        "shared"
+    ],
+    "scripts": {
+        "dev:back": "npm run dev -w packages/back",
+        "build:back": "npm run build -w packages/back",
+        "start:back": "npm run start -w packages/back",
+        "dev:web": "npm run dev -w packages/web",
+        "build:web": "npm run build -w packages/web",
+        "dev:mobile": "npm run dev -w packages/mobile",
+        "build:mobile": "npm run build -w packages/mobile",
+        "build:shared": "npm run build -w packages/shared"
+    },
+    "devDependencies": {
+        "@types/node": "^25.5.0",
+        "typescript": "^5.9.3",
+        "tsx": "^4.21.0"
+    }
+}
