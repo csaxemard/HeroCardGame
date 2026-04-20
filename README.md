@@ -1,7 +1,7 @@
 # Hero Card Game
 
 ## Concept
-Ce projet adapte au format numérique le jeu de cartes Hero, créé en 2021 par Gricha.  
+Ce projet adapte au format numérique le jeu de cartes Hero.  
 Plateformes cibles : Web et mobile
 
 

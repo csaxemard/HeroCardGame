@@ -1,0 +1,49 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg-deep:      #0a0608;
+  --bg-mid:       #110d10;
+  --bg-surface:   #1a1218;
+  --gold:         #c9a84c;
+  --gold-light:   #f0d080;
+  --gold-dim:     #7a5e25;
+  --crimson:      #8b1a1a;
+  --crimson-glow: #c0392b;
+  --sapphire:     #1a3a6b;
+  --sapphire-glow:#2e6fbf;
+  --emerald:      #1a5c2e;
+  --emerald-glow: #27ae60;
+  --violet:       #4a1a6b;
+  --violet-glow:  #8e44ad;
+  --text-prim:    #f0e6d0;
+  --text-dim:     #8a7a65;
+  --border:       #3a2a1a;
+  --shadow:       rgba(0,0,0,0.8);
+}
+
+html, body {
+  height: 100%;
+  background: var(--bg-deep);
+  color: var(--text-prim);
+  font-family: 'Crimson Pro', Georgia, serif;
+  overflow: hidden;
+}
+
+#root {
+  height: 100%;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-family: inherit;
+}
+
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg-deep); }
+::-webkit-scrollbar-thumb { background: var(--gold-dim); border-radius: 2px; }

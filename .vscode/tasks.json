@@ -53,5 +53,11 @@
             "command": "cd ${workspaceFolder} && npm run build:shared",
             "problemMatcher": [ ],
         },
+        {
+            "label": "[Any] Run current ts file",
+            "type": "shell",
+            "command": "npx tsx ${file}",
+            "problemMatcher": [ ],
+        },
     ],
 }

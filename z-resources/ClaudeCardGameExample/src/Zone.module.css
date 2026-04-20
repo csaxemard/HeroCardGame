@@ -1,0 +1,87 @@
+.zone {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.06);
+  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+  min-height: 80px;
+  position: relative;
+}
+
+.zone.isOver {
+  border-color: rgba(201,168,76,0.6);
+  background: rgba(201,168,76,0.05);
+  box-shadow: 0 0 20px rgba(201,168,76,0.15), inset 0 0 30px rgba(201,168,76,0.04);
+}
+
+.zone.highlight {
+  border-color: rgba(201,168,76,0.3);
+}
+
+.zone.enemy {
+  background: rgba(139,26,26,0.05);
+  border-color: rgba(139,26,26,0.2);
+}
+
+.zone.hand {
+  background: rgba(10,6,8,0.6);
+  border-color: rgba(201,168,76,0.2);
+}
+
+.zone.graveyard {
+  opacity: 0.7;
+  min-height: 60px;
+}
+
+.zoneHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.zoneLabel {
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-dim, #8a7a65);
+}
+
+.zoneCount {
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  color: var(--gold-dim, #7a5e25);
+  background: rgba(0,0,0,0.4);
+  padding: 1px 5px;
+  border-radius: 3px;
+  border: 1px solid rgba(255,255,255,0.06);
+}
+
+.cardsRow {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 8px;
+  overflow-x: auto;
+  overflow-y: visible;
+  padding: 4px 2px 8px;
+  min-height: 56px;
+  align-items: flex-end;
+  scrollbar-width: thin;
+}
+
+.cardsRow.empty {
+  align-items: center;
+  justify-content: center;
+}
+
+.emptyHint {
+  font-family: 'Crimson Pro', Georgia, serif;
+  font-style: italic;
+  font-size: 13px;
+  color: var(--text-dim, #8a7a65);
+  opacity: 0.4;
+  pointer-events: none;
+}

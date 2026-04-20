@@ -1,36 +1,15 @@
-// tsconfig Loxya (prov)
 {
     "compilerOptions": {
-        "baseUrl": ".",
-        "allowJs": true,
-        "allowArbitraryExtensions": true,
-        "allowImportingTsExtensions": false,
-        "allowSyntheticDefaultImports": true,
-        "esModuleInterop": true,
-        "exactOptionalPropertyTypes": false,
-        "forceConsistentCasingInFileNames": true,
-        "jsx": "preserve",
-        "lib": [ "esnext", "dom", "dom.iterable" ],
-        "isolatedModules": true,
-        "module": "esnext",
-        "moduleDetection": "auto",
-        "moduleResolution": "bundler",
-        "moduleSuffixes": [ "" ],
-        "noEmit": true,
-        "noErrorTruncation": true,
-        "noFallthroughCasesInSwitch": true,
-        "noImplicitReturns": true,
-        "noUncheckedSideEffectImports": true,
-        "resolveJsonModule": true,
-        "skipLibCheck": true,
+        "outDir": "./dist",
+        "rootDir": "./src",
+        "declaration": true,
+        "declarationMap": true,
         "strict": true,
-        "target": "ESNext",
-        "useDefineForClassFields": true,
-        "verbatimModuleSyntax": true,
-        "paths": {
-            "@/*": [ "./src/*" ],
-            "@fixtures/*": [ "./tests/fixtures/*" ]
-        }
+        "target": "esnext",
+        "module": "nodenext",
+        "moduleResolution": "nodenext",
+        "esModuleInterop": true,
     },
-    "include": [ "./src", "./tests", "./vendors" ]
+    "include": [ "src/**/*" ],
+    "exclude": [ "node_modules", "dist" ]
 }

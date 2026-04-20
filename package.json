@@ -16,7 +16,7 @@
         "build:web": "npm run build -w packages/web",
         "dev:mobile": "npm run dev -w packages/mobile",
         "build:mobile": "npm run build -w packages/mobile",
-        "build:shared": "npm run build -w packages/shared"
+        "build:shared": "npm run build -w shared"
     },
     "devDependencies": {
         "@types/node": "^25.5.0",

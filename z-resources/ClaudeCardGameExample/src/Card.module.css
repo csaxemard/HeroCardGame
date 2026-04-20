@@ -1,0 +1,249 @@
+.card {
+  position: relative;
+  width: 120px;
+  height: 180px;
+  border-radius: 8px;
+  background: linear-gradient(160deg, #1e1520 0%, #110d10 60%, #0d090c 100%);
+  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  padding: 6px;
+  gap: 3px;
+  cursor: grab;
+  user-select: none;
+  transition: transform 0.2s cubic-bezier(.34,1.56,.64,1), box-shadow 0.2s ease;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.card:hover:not(.enemy) {
+  transform: translateY(-12px) scale(1.05);
+  z-index: 100;
+}
+
+.card.overlay {
+  cursor: grabbing;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.9), 0 0 30px var(--suit-glow, #c9a84c);
+  transform: rotate(3deg) scale(1.08);
+}
+
+/* Suit color accents */
+.fire   { border-color: #8b1a1a; box-shadow: 0 2px 12px rgba(192,57,43,0.3), inset 0 0 20px rgba(192,57,43,0.05); }
+.water  { border-color: #1a3a6b; box-shadow: 0 2px 12px rgba(46,111,191,0.3), inset 0 0 20px rgba(46,111,191,0.05); }
+.earth  { border-color: #1a5c2e; box-shadow: 0 2px 12px rgba(39,174,96,0.3),  inset 0 0 20px rgba(39,174,96,0.05);  }
+.arcane { border-color: #4a1a6b; box-shadow: 0 2px 12px rgba(142,68,173,0.3), inset 0 0 20px rgba(142,68,173,0.05); }
+
+.fire:hover:not(.enemy)   { box-shadow: 0 16px 40px rgba(0,0,0,0.8), 0 0 20px rgba(255,107,53,0.6); }
+.water:hover:not(.enemy)  { box-shadow: 0 16px 40px rgba(0,0,0,0.8), 0 0 20px rgba(116,185,255,0.6); }
+.earth:hover:not(.enemy)  { box-shadow: 0 16px 40px rgba(0,0,0,0.8), 0 0 20px rgba(85,239,196,0.6); }
+.arcane:hover:not(.enemy) { box-shadow: 0 16px 40px rgba(0,0,0,0.8), 0 0 20px rgba(224,86,253,0.6); }
+
+/* Rarity border glow */
+.legendary { border-width: 2px; }
+.fire.legendary   { border-color: #ff6b35; }
+.water.legendary  { border-color: #74b9ff; }
+.earth.legendary  { border-color: #55efc4; }
+.arcane.legendary { border-color: #e056fd; }
+
+/* In-field cards are smaller */
+.inField {
+  width: 100px;
+  height: 148px;
+}
+.inField .artZone { height: 38px; }
+.inField .desc { display: none; }
+
+.enemy {
+  cursor: default;
+  transform: rotate(180deg);
+}
+.enemy:hover { transform: rotate(180deg); }
+
+/* Holo shimmer */
+.holoShimmer {
+  position: absolute;
+  inset: 0;
+  border-radius: 8px;
+  background: linear-gradient(
+    125deg,
+    transparent 40%,
+    rgba(255,255,255,0.04) 50%,
+    transparent 60%
+  );
+  background-size: 200% 200%;
+  animation: shimmer 3s ease infinite;
+  pointer-events: none;
+  z-index: 10;
+}
+
+@keyframes shimmer {
+  0%   { background-position: 200% 0%; }
+  100% { background-position: -200% 0%; }
+}
+
+/* Top row */
+.topRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.mana {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  background: rgba(0,0,0,0.5);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 4px;
+  padding: 1px 5px;
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--suit-glow, #c9a84c);
+  text-shadow: 0 0 8px var(--suit-glow, #c9a84c);
+}
+
+.manaIcon { font-size: 7px; opacity: 0.7; }
+
+.suitEmoji { font-size: 13px; filter: drop-shadow(0 0 4px currentColor); }
+
+/* Art zone */
+.artZone {
+  height: 54px;
+  border-radius: 5px;
+  background: radial-gradient(circle at 50% 60%, color-mix(in srgb, var(--suit-color) 18%, transparent), transparent 70%);
+  border: 1px solid color-mix(in srgb, var(--suit-color) 30%, transparent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.artSymbol {
+  font-size: 28px;
+  filter: drop-shadow(0 0 12px var(--suit-glow, #c9a84c)) drop-shadow(0 0 24px var(--suit-glow, #c9a84c));
+  animation: pulse 2.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1);    filter: drop-shadow(0 0 10px var(--suit-glow)) drop-shadow(0 0 20px var(--suit-glow)); }
+  50%       { transform: scale(1.1); filter: drop-shadow(0 0 18px var(--suit-glow)) drop-shadow(0 0 36px var(--suit-glow)); }
+}
+
+.legendaryRing {
+  position: absolute;
+  inset: 4px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.15);
+  animation: spin 8s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* Name */
+.nameRow {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.cardName {
+  font-family: 'Cinzel', serif;
+  font-size: 8.5px;
+  font-weight: 600;
+  color: var(--gold-light, #f0d080);
+  line-height: 1.2;
+  letter-spacing: 0.03em;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+}
+
+.rarityBadge {
+  font-family: 'Cinzel', serif;
+  font-size: 7px;
+  color: var(--suit-color, #c9a84c);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  opacity: 0.8;
+}
+
+/* Description */
+.descRow {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow: hidden;
+}
+
+.power {
+  font-family: 'Cinzel', serif;
+  font-size: 7.5px;
+  color: var(--suit-glow, #c9a84c);
+  font-weight: 600;
+  text-shadow: 0 0 6px var(--suit-glow, #c9a84c);
+}
+
+.desc {
+  font-family: 'Crimson Pro', Georgia, serif;
+  font-size: 9px;
+  color: var(--text-dim, #8a7a65);
+  font-style: italic;
+  line-height: 1.3;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+/* Stats bar */
+.statsRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  background: rgba(0,0,0,0.5);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 4px;
+  padding: 3px 6px;
+}
+
+.stat {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-prim, #f0e6d0);
+}
+
+.statIcon { font-size: 9px; }
+
+.statDivider {
+  width: 1px;
+  height: 12px;
+  background: rgba(255,255,255,0.1);
+}
+
+/* Ornament corners */
+.cornerTL, .cornerBR {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  opacity: 0.3;
+}
+
+.cornerTL {
+  top: 4px; left: 4px;
+  border-top: 1px solid var(--gold, #c9a84c);
+  border-left: 1px solid var(--gold, #c9a84c);
+}
+
+.cornerBR {
+  bottom: 4px; right: 4px;
+  border-bottom: 1px solid var(--gold, #c9a84c);
+  border-right: 1px solid var(--gold, #c9a84c);
+}
