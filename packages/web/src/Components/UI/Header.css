@@ -1,0 +1,222 @@
+/* Vars */
+.Header {
+    --headerHeight: 70px;
+    --navDrawerTopOffset: 45px;
+    --navDrawerTopMargin: -5px;
+
+    /* Colors */
+
+    --navDrawerBorder: transparent;
+
+    --linkNav: var(--textSub1);
+    --linkNavHover: #3876d9;
+    --linkNavDrawerHover: #3876d9;
+    --linkNavCurrent: #3876d9;
+
+    --btnBgNavHoverColored: #ecf2fc;
+    --btnBgNavActiveColored: #bdd6ff;
+
+    &.dark {
+        --navDrawerTopOffset: 55px;
+        --navDrawerTopMargin: -15px;
+
+        /* Colors */
+        --navDrawerBorder: var(--dividerColor);
+
+        --linkNav: #e6e6e6;
+        --linkNavHover: #42b883;
+        --linkNavCurrent: #42b883;
+        --linkNavDrawerHover: #42b883;
+
+        --btnBgNavHoverColored: var(--bgTop2);
+        --btnBgNavActiveColored: #757575;
+    }
+}
+
+.Header {
+    width: 100%;
+    height: var(--headerHeight);
+    padding: 15px 24px;
+    background-color: var(--bg);
+    box-shadow: var(--shadow);
+    transition: transform .5s, opacity .2s, var(--transitionDefaults);
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    /* &.headerIsHidden {
+        transform: translateY(-100%);
+        opacity: 0;
+    } */
+
+    .appLogoLink {
+        font-size: 1.5em;
+        color: var(--textSub1);
+        text-decoration: underline var(--emph);
+    }
+
+    .navbar {
+        display: flex;
+        gap: 5px;
+
+        .navDrawer-container:has(.router-link-active) .category,
+        .navDrawer-container:has(.router-link-active) .navDrawerItem.router-link-active {
+            color: var(--linkNavCurrent);
+            /* Souligne le lien de la page actuelle */
+            /* text-decoration: underline var(--emph) !important; */
+        }
+
+    }
+
+    .themeSwitch {
+        font-size: large;
+        background-color: transparent;
+        transition: rotate .5s ease-out, var(--transitionDefaults);
+        filter: grayscale();
+
+        &:active {
+            rotate: 360deg;
+            transition: rotate 0s, var(--transitionDefaults);
+        }
+    }
+
+    .navDrawer-container {
+        position: relative;
+        z-index: 5;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        &:before {
+            /* Marge extérieure pour garder le drawer ouvert */
+            content: "";
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            z-index: -1;
+            /* debug background-color: rgba(0, 0, 0, 0.083); */
+        }
+
+        .navDrawer {
+            position: absolute;
+            top: var(--navDrawerTopOffset);
+            padding: 10px 0;
+            width: max-content;
+            max-width: 300px;
+            z-index: 5;
+
+            background-color: var(--bg);
+            border: 1px solid var(--navDrawerBorder);
+            border-radius: 12px;
+            box-shadow: var(--shadow2);
+            transition: opacity .2s;
+
+            display: flex;
+            flex-direction: column;
+
+            overflow-wrap: break-word;
+
+            &:before {
+                /* Marge extérieure pour garder le drawer ouvert */
+                content: "";
+                position: absolute;
+                top: var(--navDrawerTopMargin);
+                right: -20px;
+                bottom: -20px;
+                left: -20px;
+                z-index: -1;
+                /* background-color: rgba(0, 0, 0, 0.066); */
+            }
+
+            &::after {
+                /* Triangle */
+                position: absolute;
+                content: '';
+                bottom: 100%;
+                left: 50%;
+                width: 0;
+                height: 0;
+                margin-left: -10px;
+                border-left: 10px solid transparent;
+                border-right: 10px solid transparent;
+                border-bottom: 10px solid var(--navDrawerBorder);
+            }
+        }
+    }
+
+    .navLink {
+        /* pos */
+        height: 40px;
+        padding: 0 15px;
+
+        /* prop */
+
+        /* content pos */
+        display: flex;
+        align-items: center;
+
+        /* content prop */
+        color: var(--linkNav);
+        font-size: var(--linkNavFontSize);
+        text-decoration: none;
+        border-radius: 50px;
+        transition: var(--transitionDefaults), background-color .2s;
+
+        &:hover {
+            color: var(--linkNavHover);
+            background-color: var(--btnBgNavHoverColored);
+            cursor: pointer;
+        }
+
+        &:active {
+            background-color: var(--btnBgNavActiveColored);
+        }
+
+        &.navDrawerHandle:hover {
+            background-color: transparent;
+        }
+
+        &.navDrawerItem {
+            /* pos */
+            min-height: 40px;
+            padding: 10px 15px;
+
+            /* prop */
+            transition: var(--transitionDefaults), color 0.25s;
+
+            &:hover {
+                background-color: transparent;
+                color: var(--linkNavDrawerHover);
+            }
+        }
+    }
+
+    /* button.hideHeader {
+        position: absolute;
+        top: calc(var(--headerHeight) + 10px);
+        right: 10px;
+        width: 30px;
+        height: 20px;
+        padding-top: calc(2px * v-bind("headerIsHidden ? 2.5 : 1"));
+
+        background-color: var(--bgTop1);
+        transition: scale .3s, top .5s, var(--transitionDefaults);
+
+        &.headerIsHidden {
+            top: 10px;
+        }
+
+        &:active {
+            transition: scale .1s, top .5s, var(--transitionDefaults);
+        }
+
+        &:hover {
+            background-color: var(--bgTop2);
+        }
+    } */
+
+
+}

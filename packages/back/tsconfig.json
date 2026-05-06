@@ -7,6 +7,8 @@
         "module": "nodenext",
         "moduleResolution": "nodenext",
         "esModuleInterop": true,
+        "allowImportingTsExtensions": true,
+        "noEmit": true,
     },
     "include": [ "src/**/*" ],
     "exclude": [ "node_modules", "dist" ]

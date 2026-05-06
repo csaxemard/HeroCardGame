@@ -1,0 +1,127 @@
+/* Vars */
+
+#app {
+    --font: Verdana, Geneva, Tahoma, sans-serif;
+    --transitionDefaults: background-color .5s, color .5s;
+    --linkNavFontSize: 19px;
+
+    /* Les variables de thèmes sont stockées dans le appState et générées automatiquement */
+}
+
+
+
+/* Tags default */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+
+    text-underline-offset: 3px;
+
+    transition: var(--transitionDefaults);
+
+    /* transition-property: width, height, top, right, bottom, left,
+        transform, scale, rotate,
+        background-color, color, opacity;
+    transition-duration: .5s; */
+}
+
+h1, h2 {
+    font-weight: normal;
+}
+
+a {
+    position: relative;
+    color: var(--link);
+    text-decoration: none;
+
+    &:hover {
+        text-decoration: underline;
+    }
+
+    &[target="_blank"]:hover::after {
+        content: "⇗";
+        position: absolute;
+        display: inline-block;
+        margin-left: 7px;
+        text-decoration: none;
+        line-height: 1;
+    }
+}
+
+button {
+    --transitionDefaultsBtn: var(--transitionDefaults), scale .3s, background-color .3s;
+    --transitionDefaultsBtnActive: var(--transitionDefaults), scale .07s, background-color .1s;
+
+    /* pos */
+    padding: 5px;
+    border: none;
+
+    /* prop */
+    background-color: var(--btnBg);
+    color: var(--text);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: var(--transitionDefaultsBtn);
+
+    /* content pos */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+        background-color: var(--btnBgHover);
+    }
+
+    &:active {
+        background-color: var(--btnBgActive);
+        scale: .9;
+        transition: var(--transitionDefaultsBtnActive);
+    }
+}
+
+
+
+
+/* Classes globales */
+
+.charAsIcon {
+    line-height: 1;
+    user-select: none;
+}
+
+.centered {
+    align-self: center;
+}
+
+.offsetTop {
+    margin-top: 50px;
+}
+
+.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+
+
+/* App */
+
+#app {
+    height: 100vh;
+    overflow-x: hidden;
+
+    background-color: var(--bg);
+
+    display: flex;
+    flex-direction: column;
+
+    font-family: var(--font);
+    color: var(--text);
+
+    & > main {
+        flex: 1;
+    }
+}

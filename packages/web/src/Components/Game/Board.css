@@ -1,0 +1,71 @@
+.Board {
+    padding: 20px;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    transition: var(--transitionDefaults), transform 1s ease-out, opacity 1s;
+
+    border-radius: 12px;
+
+    display: grid;
+    grid-template-columns: repeat(7, 140px);
+    grid-template-rows: repeat(8, 80px);
+    gap: 20px;
+    justify-items: center;
+    justify-content: center;
+    /* overflow-y: hidden; */
+
+    transform: scale(min(100vw / 1100px, 100vh / 780px));
+
+    &.transitionPerspective-start {
+        transform: perspective(500px) translate3d(0, 0, 0) rotateX(80deg) !important;
+        opacity: 0 !important;
+    }
+
+    &.transitionPerspective-end {
+        transform: perspective(500px) translate3d(0, -10px, 20px) rotateX(10deg);
+        opacity: 1;
+    }
+
+    .zone {
+    background-color: rgba(0, 0, 0, .2);
+    border-radius: 12px;
+        position: relative;
+        width: stretch;
+        grid-row-start: var(--gridrs);
+        grid-column-start: var(--gridcs);
+        grid-row-end: span 2;
+
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+
+        &.player {
+            border-color: cornflowerblue;
+        }
+
+        &.opponent {
+            border-color: darksalmon;
+            rotate: 180deg;
+            filter: brightness(.5);
+        }
+
+        &.hasNoCard {
+            border-width: 1.5px;
+            border-style: dashed;
+            border-radius: 4px;
+            user-select: none;
+        }
+    }
+
+    .zone .card {
+        position: absolute;
+        /* rotate: 1deg; */
+        height: 95%;
+        width: 95%;
+        /* background-color: #2B2B2B; */
+        border-radius: 2px;
+        object-fit: contain;
+    }
+}

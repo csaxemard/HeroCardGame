@@ -14,11 +14,6 @@ dist/
 dist-ssr/
 build/
 
-.env
-*.unused
-*.old
-*.local
-
 # Logs
 logs
 *.log
@@ -29,4 +24,13 @@ pnpm-debug.log*
 lerna-debug.log*
 
 # Autres
-TestWebMobile/
+.env
+*.unused
+*.old
+*.local
+*.lnk
+
+packages/web/public/cards/
+z-resources/ClaudeCardGameExample/
+z-resources/TestWebMobile/
+z-resources/heroCards_20260424
