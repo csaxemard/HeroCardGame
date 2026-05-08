@@ -1,6 +1,7 @@
 import "./Card.css"
 import type { Card } from "@/cards";
 import { cards } from "@/cards";
+import { useMemo } from "react";
 
 interface CardProps {
     /** - Default : false */
@@ -27,27 +28,27 @@ export default function Card({ isGrabbable = false, isSelectable = false, isFace
         return card
     }
 
-
-
     const card: Card | undefined = getCardById(cardId)
     if (!card) return (<p>No card found with id {cardId}</p>)
 
+
+
+    const randomRotate = useMemo(() => (
+        Math.floor(Math.random() * 7) - 3
+    ), []);
+
     return (
         <div
-            className={`Card ${isGrabbable ? "isGrabbable" : ""} ${isSelectable ? "isSelectable" : ""} ${isFaceDown ? "isFaceDown" : ""}`}
-            data-id={card.id} style={{
-                rotate: String(Math.floor(Math.random() * (3 - (-3) + 1)) + (-3)) + "deg"
-            }}>
-            {!isFaceDown &&
-                <div className="front">
-                    <img src={card.img} alt={card.name} />
-                </div>
-            }
-            {isFaceDown &&
-                <div className="back">
-                    <img src="/public/cardBack.png" alt="cardBack" />
-                </div>
-            }
+            className={`Card ${isGrabbable ? "isGrabbable" : ""} ${isSelectable ? "isSelectable" : ""}`}
+            data-id={card.id}
+            style={{ transform: `rotate(${randomRotate}deg)` }}
+        >
+            <div className="front">
+                <img src={card.img} alt={card.name} />
+            </div>
+            <div className="back">
+                <img src="/cardBack.png" alt="cardBack" />
+            </div>
         </div>
     )
 }

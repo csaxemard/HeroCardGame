@@ -1,3 +1,5 @@
+// --- App system types ---
+
 export type Theme = "dark" | "light";
 
 
@@ -8,3 +10,8 @@ export type AppState = {
     // Mutables :
     currentTheme: Theme,
 }
+
+
+
+// --- Gameplay types ---
+
