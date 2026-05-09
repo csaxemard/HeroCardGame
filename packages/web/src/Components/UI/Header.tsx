@@ -24,7 +24,7 @@ export default function Header() {
             delete navDrawerContainer?.dataset.isHovered
             drawer.classList.add("hidden")
         });
-        
+
         const navDrawerContainer: HTMLElement | null = (event.target as HTMLElement).closest(".navDrawer-container");
         const navDrawer = (event.target as HTMLElement).closest(".navDrawer-container")?.querySelector(".navDrawer")
 
@@ -40,7 +40,7 @@ export default function Header() {
         const navDrawer = (event.target as HTMLElement).closest(".navDrawer-container")?.querySelector(".navDrawer")
 
         delete navDrawerContainer?.dataset.isHovered
-        
+
         setTimeout(() => {
             if (navDrawerContainer?.dataset.isHovered !== "true") {
                 navDrawer?.classList.add("hidden")
@@ -83,9 +83,9 @@ export default function Header() {
                     </a>
                     <ul className={`navDrawer hidden`}>
                         <Link to={"/debug/card"} className="navLink navDrawerItem">Card viewer</Link>
-                        <Link to={"/debug/board"} className="navLink navDrawerItem">Board</Link>
                     </ul>
                 </div>
+                <Link to={"/match"} className="navLink navDrawerItem">Match</Link>
                 <Link to="/" className="navLink">Accueil</Link>
 
             </nav >

@@ -4,13 +4,13 @@ import ClassicLayout from "@/Layouts/ClassicLayout";
 import Board, { type BoardZonesContent, type ZoneContent, type ZonesNames } from "@/Components/Game/Board";
 import Card from "@/Components/Game/Card";
 import { cards, type Card as CardType } from "@/cards";
-import { BoardViewerContext } from "./BoardViewerContext";
-import "./BoardViewer.css"
+import { MatchContext } from "./MatchContext";
+import "./Match.css"
 import ModalCardFullscreen from "@/Components/Game/ModalCardFullscreen";
 
 
 
-export default function BoardViewer() {
+export default function Match() {
     function getRandomCardId() {
         const min = 0
         const max = 125
@@ -141,12 +141,12 @@ export default function BoardViewer() {
 
     return (
         <ClassicLayout hideFooter={true}>
-            <main className="BoardViewer">
-                <BoardViewerContext value={showModal}>
+            <main className="Match">
+                <MatchContext value={showModal}>
                     <Board readyForMatch boardZonesContent={boardZonesContent} />
 
                     {showModalCardFullscreen && <ModalCardFullscreen card={cards[modalCardFullscreen_cardId!]} removeModal={removeModal} />}
-                </BoardViewerContext>
+                </MatchContext>
             </main>
 
         </ClassicLayout>

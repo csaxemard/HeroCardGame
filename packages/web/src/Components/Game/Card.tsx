@@ -3,7 +3,7 @@ import type { Card } from "@/cards";
 import { cards } from "@/cards";
 import React, { useContext, useEffect, useMemo, useState, type SyntheticEvent } from "react";
 import type { PlayerType } from "./Board";
-import { BoardViewerContext } from "@/Views/Debug/BoardViewerContext";
+import { MatchContext } from "@/Views/MatchContext";
 
 interface CardProps {
     /** - Default : false */
@@ -33,7 +33,7 @@ export default function Card({ isGrabbable = false, isSelectable = false, isFace
 
 
     // Context pour modal.showCardFullscreen
-    const showModal = useContext(BoardViewerContext)
+    const showModal = useContext(MatchContext)
     if (!showModal) throw new Error("useContext must be used within an AppProvider");
 
     // Récupère la carte associée à l'id

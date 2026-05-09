@@ -73,7 +73,7 @@ export default function Board({ readyForMatch = false, boardZonesContent }: Boar
 
 
 
-    // Logique à déplacer dans BoardViewer
+    // Logique à déplacer dans Match
     useEffect(() => {
         setTimeout(() => {
             readyForMatch && document.querySelector(`.Board`)?.classList.remove("transitionPerspective-start")
