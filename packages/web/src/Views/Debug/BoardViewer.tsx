@@ -3,7 +3,10 @@ import { useEffect, useState } from "react";
 import ClassicLayout from "@/Layouts/ClassicLayout";
 import Board, { type BoardZonesContent, type ZoneContent, type ZonesNames } from "@/Components/Game/Board";
 import Card from "@/Components/Game/Card";
-import { cards } from "@/cards";
+import { cards, type Card as CardType } from "@/cards";
+import { BoardViewerContext } from "./BoardViewerContext";
+import "./BoardViewer.css"
+import ModalCardFullscreen from "@/Components/Game/ModalCardFullscreen";
 
 
 
@@ -21,7 +24,16 @@ export default function BoardViewer() {
         return cardId
     }
 
-    
+    function showModal(cardId: number) {
+        set_modalCardFullscreen_cardId(cardId)
+        set_showModalCardFullscreen(true)
+    }
+
+    function removeModal() {
+        set_showModalCardFullscreen(false)
+    }
+
+
 
     // Définit le contenu des zones du Board
     const [boardZonesContent, set_boardZonesContent] = useState<BoardZonesContent>({
@@ -121,11 +133,22 @@ export default function BoardViewer() {
 
 
 
+    // Concernant modalCardFullscreen
+    const [showModalCardFullscreen, set_showModalCardFullscreen] = useState(false)
+    const [modalCardFullscreen_cardId, set_modalCardFullscreen_cardId] = useState<number>()
+
+
+
     return (
         <ClassicLayout hideFooter={true}>
-            <main className="centered">
-                <Board readyForMatch boardZonesContent={boardZonesContent} />
+            <main className="BoardViewer">
+                <BoardViewerContext value={showModal}>
+                    <Board readyForMatch boardZonesContent={boardZonesContent} />
+
+                    {showModalCardFullscreen && <ModalCardFullscreen card={cards[modalCardFullscreen_cardId!]} removeModal={removeModal} />}
+                </BoardViewerContext>
             </main>
+
         </ClassicLayout>
     )
 }

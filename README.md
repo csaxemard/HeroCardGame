@@ -9,6 +9,8 @@ Plateformes cibles : Web et mobile
 <br>
 
 ## Backlog
+- Tooltip recording mouse maintain on card (spinner ?)
+- Fix bug No card found with correct Id
 
 ### Idées
 - Importer les routes get de web à partir de shared pour les avoir aussi dans mobile ? Peut-être pas utile

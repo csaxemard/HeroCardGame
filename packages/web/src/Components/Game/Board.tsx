@@ -4,7 +4,7 @@ import Card from "./Card";
 
 
 
-type PlayerType = "opponent" | "player";
+export type PlayerType = "opponent" | "player";
 
 export type ZonesNames = "hero" | "swordL" | "swordR" | "shield" | "archerL" | "archerR" | "field" | "deck" | "extraDeck" | "graveyard" | "extraGraveyard" | "banished";
 

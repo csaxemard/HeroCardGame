@@ -46,7 +46,9 @@
         }
         
         &.banished {
+            display: none; /* Devtodo: A corriger */
             position: absolute;
+            top: -500px;
         }
 
         &.player {
