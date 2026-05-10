@@ -1,15 +1,14 @@
-import type { Card } from "@/cards"
+import type { Card as CardType } from "@/cards"
 import "./ModalCardFullscreen.css"
 import { useEffect } from "react"
 
 
 
-export default function ModalCardFullscreen({ card, removeModal }: { card: Card, removeModal: () => void }) {
+export default function ModalCardFullscreen({ card, removeModal }: { card: CardType, removeModal: () => void }) {
     function handleEscape(e: KeyboardEvent) {
-        console.log(e)
         if (e.key !== "Escape") return
-        removeModal()
         document.removeEventListener("keydown", handleEscape)
+        removeModal()
     }
 
     function handleClickModal(e: any) {

@@ -30,7 +30,7 @@
 
     img {
         height: calc(100% - 100px);
-        border-radius: 12px;
+        border-radius: 1em;
         z-index: 110;
     }
 }

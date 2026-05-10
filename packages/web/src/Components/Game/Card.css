@@ -1,65 +1,9 @@
 .Card {
-    /* 
-    Old before gpt corrected
+    /* position: relative; */
+    height: 100%;
+    width: fit-content;
     max-width: 100%;
     max-height: 100%;
-    object-fit: contain;
-
-    transform-style: preserve-3d;
-    transition: transform 0.6s;
-    cursor: pointer;
-    user-select: none;
-
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-
-    &.isGrabbable {
-        cursor: grab;
-    }
-
-    &.isSelectable {
-        outline: 2px solid white;
-        outline-offset: 2px;
-    }
-
-    &.isFaceDown {
-        transform: rotateX(180deg);
-        transform-style: preserve-3d;
-    }
-
-    &.flipped {
-        transform: rotateY(180deg);
-    }
-
-    .front,
-    .back {
-        width: 100%;
-        height: 100%;
-        backface-visibility: hidden;
-
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border: 1px solid #000;
-        border-radius: 8px;
-        overflow: hidden;
-
-        img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-    }
-
-    .back {
-        transform: rotateY(180deg);
-    } */
-
-    position: relative;
-    width: 100%;
-    height: 100%;
     cursor: pointer;
     user-select: none;
 
@@ -72,7 +16,17 @@
         outline-offset: 2px;
     }
 
-    &.flipped {
+    &.hasRoundedCorners img {
+        border-radius: 4px;
+    }
+
+    img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+    }
+
+    /* &.flipped {
         .front {
             transform: rotateY(180deg);
         }
@@ -80,9 +34,9 @@
         .back {
             transform: rotateY(0deg);
         }
-    }
+    } */
 
-    .front,
+    /* .front,
     .back {
         position: absolute;
         width: 100%;
@@ -96,13 +50,13 @@
             height: 100%;
             object-fit: contain;
         }
-    }
+    } */
 
-    .front {
+    /* .front {
         transform: rotateY(0deg);
-    }
+    } */
 
-    .back {
+    /* .back {
         transform: rotateY(180deg);
-    }
+    } */
 }

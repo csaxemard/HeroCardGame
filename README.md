@@ -10,16 +10,52 @@ Date de départ : 14 décembre 2025
 
 
 ## Backlog
+- Restreindre ZoneContent to one type of card
+
+
 - Vital :
-    - (web/Card) fix: bug No card found but Id is correct
-    - (web/Match) Implémenter deck
+    - (web/Card) Fix Card not showing despite correct id
+    - (web/Match) Add Deck
         - Comp Deck
         - Type Deck only pour zoneContent de deck
-        - 
+    - (web/Card) fix: removeEventListener("keydown", handleEscape) not working in ModalCardFullscreen
 
-- Déco :
-    - Tooltip recording mouse maintain on card (spinner ?), ou bien Rclick simple
-- Idées :
+- Config
+    - Configurer un des serveurs de l’école pour servir mon site
+    - Mettre toutes les cartes dans une base de données au lieu de variable js
+    - Mettre un filigrane sur chaque carte, c’est important, xnconvert il le fait. (Je peux l’enlever pour l’exam peut-être). Associer l’id de rainbowpath et gricha pour que eux utilisent les cartes sans filigrane peut-être ?
+- Gameplay (Match)
+    - 🔹 (1) Faire que chaque emplacement ne peut recevoir qu’un type de carte défini
+    - (2) Vider toutes les zones. Remplir seulement le deck et l’extradeck avec un composant Deck, isExtraDeck.
+    - Le composant Deck il return une div avec une img de CardBack, et il a un props avec remainingCards qui est une liste de cards, et il affiche un absolute remainingCards.length sur la pile du Deck.
+    - Ok ça c’était le deck / extradeck. Demander à gpt si c’est mieux de faire deux comp deck et extradeck ou si un seul avec un prop isExtraDeck est mieux
+    - je me demande si à ce stade je ne mettrais pas déjà en place la bdd, ça ne devrait pas être trop long i guess ? Compliqué surement pas. Cenqui est difficile c'est que si je le fais maintenant au lieu de le hardcoder d’abord je risque de devoir modifier les tables pour suit my needs après et ça c’est chiant je crois.
+    - Ensuite on aura le début de partie. Nourrir le deck avec 30 random cards de type non hero ou darkhero.
+    - ensuite regarder les règles pour savoir c’est quoi la première étape de la partie. Je suppose qu’il faut choisir un héro à mettre en premier ?
+    - d’ailleurs on a combien de lp ? Il me semble qu’il n’y a pas de LP et que c’est seulement quand l’adv n’a plus de héro qu’on a gagné
+    - (idée) ce serait tellement stylé d’avoir une version portable pour que gricha et louka puissent faire des batailles en ligne, des decks etc
+    - Ensuite il faudra regarder les règles pour voir la suite du déroulement de la partie après la pose du héro, chaque joueur pioche des cartes ? Combien ? Il faudra que je représente la main aussi, que j’aie un moyen de l’afficher
+    - Je vais peut-être enlever la perspective parce qu’elle est un peu galère, ah j’ai pas essayé de la mettre en absolute aussi on verra. Ce qui serait bien ce serait de ne pas avoir une perspective mais une grid controllée, avec des vraies diagonales. Mais bon ça c’est de la déco ce sera pour après. 
+    - maintenant que les joueurs ont pioché il faut faire la phase 0 où on pose chacun ses cartes face verso. Et ensuite il faut décider qui va commencer en premier.
+    - Et ensuite tour 1 - premier joueur, qu’est-ce qu’il a comme options ? Il peut poser un monstre, invoquer par rituel un dark héro etc etc, implémenter les règles une par une, mais d’abord celles de base qui permettent d’avoir une partie complète. Pas d’invocation, pas d’effet flip. Pas de dark héro, juste les héros qui se tapent dessus et quand un héro n’a plus de PV il va au extra-cimetière et on choisit un autre héro à mettre à la place, et quand il n’y a plus de héro un joueur a gagné et l’autre a perdu.
+    - Coder chaque carte une par une
+    - Faire en sorte qu’on puisse faire une partie en temps réel entre deux ordis
+- Autres parties du site
+    - Faire un catalogue de cartes
+        - Nécessite la bdd
+    - Une page pour créer des decks
+- Catalogue (l'actuel Cards viewer)
+    - Faire une liste de toutes les cartes en petit à droite, et à gauche la carte sur laquelle on a cliqué
+    - Ajouter une option de tri de cartes, par ordre alphabétique, attaque, défense, par famille (ordre alphabétique), par type (eau etc), par role (héros, guerriers, )
+    - Et une option de groupement de cartes, par famille, ou toutes mélangées
+- Version portable
+    - D'abord faire que le site soit responsive ? Et si ça marche pas (trop lent), faire une appli ?
+    - On joueurait à l’horizontale ? Je pense ouais ou bien faire des tests d’ui, avec figma peut-être ? Pour voir comment je peux arranger le plateau sur portable
+    - Le soucis en react native c’est que il faudra que l’appli télécharge toutes les cartes, donc minimum 300Mo, sans compter React. On peut peut-être réduire la résolution des cartes parce qu’un portable n’a jamais autant de pixels, d’ailleurs sur pc aussi, là ce serait mieux, on serait peut-être à 100Mo c’est déjà mieux
+- Style
+    - Ajouter des animations sympas
+    - Tooltip recording mouse maintain on card (spinner ? [spinners](https://cssloaders.github.io/)), ou bien Rclick simple
+    - Apparence du Deck : plus tard je ferai que le composant deck son apparence c’est une pile de cardBack, exactement le nombre de cartes restantes, avec pour chacune un rotate randIntInRange btwn 1 et -1, peut-être une ombre mais c’est trop demandé. Et aussi une anim de mélange du deck.
 
 
 <br><br>

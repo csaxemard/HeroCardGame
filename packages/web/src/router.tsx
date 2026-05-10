@@ -9,7 +9,7 @@ import Match from "./Views/Match";
 
 const router = createBrowserRouter([
     { path: "/", Component: Home },
-    { path: "/debug/card", Component: CardViewer, },
+    { path: "/debug/card/:cardId?", Component: CardViewer, },
     { path: "/match", Component: Match },
     { path: "*", Component: Error404 },
 ], {})
