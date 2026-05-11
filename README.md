@@ -10,25 +10,23 @@ Date de départ : 14 décembre 2025
 
 
 ## Backlog
-- Restreindre ZoneContent to one type of card
+### Current
+- (web/Match) Add Deck
+    - ✅ Vider toutes les zones.
+    - Remplir seulement le deck et l’extradeck avec un composant Deck, isExtraDeck.
+    - Le composant Deck il return une div avec une img de CardBack
+    - Et il a un props avec remainingCards qui est une liste de cards, et il affiche un absolute remainingCards.length sur la pile du Deck.
+    - Ok ça c’était le deck / extradeck.
+    - Demander à gpt si c’est mieux de faire deux comp deck et extradeck ou si un seul avec un prop isExtraDeck est mieux
 
-
-- Vital :
-    - (web/Card) Fix Card not showing despite correct id
-    - (web/Match) Add Deck
-        - Comp Deck
-        - Type Deck only pour zoneContent de deck
+### Next
+- Bugs
     - (web/Card) fix: removeEventListener("keydown", handleEscape) not working in ModalCardFullscreen
-
 - Config
     - Configurer un des serveurs de l’école pour servir mon site
     - Mettre toutes les cartes dans une base de données au lieu de variable js
     - Mettre un filigrane sur chaque carte, c’est important, xnconvert il le fait. (Je peux l’enlever pour l’exam peut-être). Associer l’id de rainbowpath et gricha pour que eux utilisent les cartes sans filigrane peut-être ?
 - Gameplay (Match)
-    - 🔹 (1) Faire que chaque emplacement ne peut recevoir qu’un type de carte défini
-    - (2) Vider toutes les zones. Remplir seulement le deck et l’extradeck avec un composant Deck, isExtraDeck.
-    - Le composant Deck il return une div avec une img de CardBack, et il a un props avec remainingCards qui est une liste de cards, et il affiche un absolute remainingCards.length sur la pile du Deck.
-    - Ok ça c’était le deck / extradeck. Demander à gpt si c’est mieux de faire deux comp deck et extradeck ou si un seul avec un prop isExtraDeck est mieux
     - je me demande si à ce stade je ne mettrais pas déjà en place la bdd, ça ne devrait pas être trop long i guess ? Compliqué surement pas. Cenqui est difficile c'est que si je le fais maintenant au lieu de le hardcoder d’abord je risque de devoir modifier les tables pour suit my needs après et ça c’est chiant je crois.
     - Ensuite on aura le début de partie. Nourrir le deck avec 30 random cards de type non hero ou darkhero.
     - ensuite regarder les règles pour savoir c’est quoi la première étape de la partie. Je suppose qu’il faut choisir un héro à mettre en premier ?

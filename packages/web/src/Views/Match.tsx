@@ -1,13 +1,12 @@
 import { useEffect, useState } from "react";
 
 import ClassicLayout from "@/Layouts/ClassicLayout";
-import Board, { type BoardZonesContent, type ZoneContent, type ZonesNames } from "@/Components/Game/Board";
-import Card from "@/Components/Game/Card";
-import { cards, getRandomCardId } from "@/cards";
+import { cards, getRandomCardId, getRandomCardIdByRoles } from "@/cards";
 import { MatchContext } from "./MatchContext";
 import "./Match.css"
 import ModalCardFullscreen from "@/Components/Game/ModalCardFullscreen";
-
+import Board from "@/Components/Game/Board";
+import type { BoardZonesContent, ZonesNames } from "@/types";
 
 
 export default function Match() {
@@ -20,103 +19,90 @@ export default function Match() {
         set_showModalCardFullscreen(false)
     }
 
+    function fillBoardZonesContentWithRandom() {
+        set_boardZonesContent(prev => {
+            return (
+                Object.fromEntries(
+                    Object.entries(prev).map(([playerType, zones]) => [
+                        playerType,
+                        Object.fromEntries(
+                            (Object.entries(zones) as [ZonesNames, any | null][]).map(([zoneName, zoneContent]) => {
+                                if (["graveyard", "extraGraveyard"].includes(zoneName)) {
+                                    return [
+                                        zoneName,
+                                        zoneContent.cardIds?.length == 0
+                                            ? {
+                                                cardIds: Array.from({ length: Math.floor(Math.random() * 10) + 1 }, () => (
+                                                    zoneName == "extraGraveyard"
+                                                    ? getRandomCardIdByRoles(["darkHero", "halfHero", "hero", "multiHero"])
+                                                    : getRandomCardIdByRoles("monster")
+                                                )) 
+                                            }
+                                            : zoneContent
+                                    ]
+                                } else if (["deck", "extraDeck"].includes(zoneName)) {
+                                    return [
+                                        zoneName,
+                                        zoneContent.numberOfCards <= 0
+                                            ? { numberOfCards: (Math.floor(Math.random() * (12 - 1 + 1)) + 1) }
+                                            : zoneContent
+                                    ]
+                                } else {
+                                    return [
+                                        zoneName,
+                                        zoneContent.cardId == undefined
+                                            ? {
+                                                cardId: (zoneName == "hero"
+                                                    ? getRandomCardIdByRoles(["darkHero", "halfHero", "hero", "multiHero"])
+                                                    : getRandomCardIdByRoles(["monster", "field"]))
+                                            } : zoneContent
+                                    ]
+                                }
+                            })
+                        )
+                    ])
+                ) as BoardZonesContent
+            )
+        })
+    }
+
 
 
     // Définit le contenu des zones du Board
     const [boardZonesContent, set_boardZonesContent] = useState<BoardZonesContent>({
         opponent: {
-            hero: {
-                content: undefined
-            },
-            swordL: {
-                content: undefined
-            },
-            swordR: {
-                content: undefined
-            },
-            shield: {
-                content: undefined
-            },
-            archerL: {
-                content: undefined
-            },
-            archerR: {
-                content: undefined
-            },
-            field: {
-                content: undefined
-            },
-            deck: {
-                content: undefined
-            },
-            extraDeck: {
-                content: undefined
-            },
-            graveyard: {
-                content: undefined
-            },
-            extraGraveyard: {
-                content: undefined
-            },
-            banished: {
-                content: undefined
-            }
+            hero: {},
+            swordL: {},
+            swordR: {},
+            shield: {},
+            archerL: {},
+            archerR: {},
+            field: {},
+            deck: { numberOfCards: 0 },
+            extraDeck: { numberOfCards: 0 },
+            graveyard: { cardIds: [] },
+            extraGraveyard: { cardIds: [] },
+            banished: { cardIds: [] },
         },
         player: {
-            hero: {
-                content: undefined
-            },
-            swordL: {
-                content: undefined
-            },
-            swordR: {
-                content: undefined
-            },
-            shield: {
-                content: undefined
-            },
-            archerL: {
-                content: undefined
-            },
-            archerR: {
-                content: undefined
-            },
-            field: {
-                content: undefined
-            },
-            deck: {
-                content: undefined
-            },
-            extraDeck: {
-                content: undefined
-            },
-            graveyard: {
-                content: undefined
-            },
-            extraGraveyard: {
-                content: undefined
-            },
-            banished: {
-                content: undefined
-            }
+            hero: {},
+            swordL: {},
+            swordR: {},
+            shield: {},
+            archerL: {},
+            archerR: {},
+            field: {},
+            deck: { numberOfCards: 0 },
+            extraDeck: { numberOfCards: 0 },
+            graveyard: { cardIds: [] },
+            extraGraveyard: { cardIds: [] },
+            banished: { cardIds: [] },
         }
     })
     useEffect(() => {
-        set_boardZonesContent(prev => ({
-            opponent: Object.fromEntries(
-                Object.keys(prev.opponent).map(zoneName => [
-                    zoneName,
-                    { content: <Card cardId={getRandomCardId()} /> }
-                ])
-            ) as Record<ZonesNames, ZoneContent>,
-            player: Object.fromEntries(
-                Object.keys(prev.player).map(zoneName => [
-                    zoneName,
-                    { content: <Card cardId={getRandomCardId()} /> }
-                ])
-            ) as Record<ZonesNames, ZoneContent>
-        }))
+        fillBoardZonesContentWithRandom()
     }, [])
+
 
 
 
@@ -139,3 +125,4 @@ export default function Match() {
         </ClassicLayout>
     )
 }
+

@@ -1,9 +1,8 @@
 import ClassicLayout from "@/Layouts/ClassicLayout"
-import Card from "../../Components/Game/Card"
+import Card from "../Components/Game/Card"
 import { useNavigate, useParams } from "react-router"
-import { cards, type CardType } from "@/cards"
+import { cards } from "@/cards"
 import styled from "styled-components"
-import { useState } from "react"
 
 
 
@@ -17,7 +16,7 @@ export default function CardViewer() {
 
     function changeViewedCard() {
         const newCardId = (document.querySelector(`#newCardId`) as HTMLInputElement).value
-        navigate(`/debug/card/${newCardId}`)
+        navigate(`/catalogue/${newCardId}`)
     }
 
 

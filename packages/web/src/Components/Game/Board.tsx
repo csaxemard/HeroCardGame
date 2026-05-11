@@ -1,32 +1,12 @@
 import { useEffect } from "react";
 import "./Board.css"
+import type { BoardZonesConfig, ZonesNames, ZoneConfig, PlayerType, BoardZonesContent, DeckZoneContent, GraveyardZoneContent, CardZoneContent } from "@/types";
 import Card from "./Card";
+import Deck from "./Deck";
+import { cards } from "@/cards";
+import Graveyard from "./Graveyard";
 
-
-
-export type PlayerType = "opponent" | "player";
-
-export type ZonesNames = "hero" | "swordL" | "swordR" | "shield" | "archerL" | "archerR" | "field" | "deck" | "extraDeck" | "graveyard" | "extraGraveyard" | "banished";
-
-interface ZoneConfig { readableName: string; gridRowStart?: number; gridColStart?: number; }
-
-export interface ZoneContent {
-    /**
-     * - Peut être une Card, ou autre chose, mais qui sera le node enfant de la zone
-     */
-    content: React.ReactNode,
-    // restreindre un type à un Component ?
-    // ReactElement<typeof Card> | ReactElement<typeof Deck> | null;
-    // ou :
-    // ReactElement<CardProps> | ReactElement<DeckProps> | null;
-
-    // Card ? Si card, et pour le deck je mets card aussi ou deck ? Demander à gpt si je deck et extradeck dans le meme component Desck avec un boolean isExtraDeck et un autre isSupraDeck etc, ou si je dois faire un component séparé pour chacun
-}
-
-type BoardZonesConfig = Record<PlayerType, Record<ZonesNames, ZoneConfig>>;
-export type BoardZonesContent = Record<PlayerType, Record<ZonesNames, ZoneContent | null>>;
-
-interface BoardProps {
+export interface BoardProps {
     /**
      * - Default value : true
      */
@@ -38,7 +18,6 @@ interface BoardProps {
      */
     boardZonesContent: BoardZonesContent
 }
-
 
 
 export default function Board({ readyForMatch = false, boardZonesContent }: BoardProps) {
@@ -82,21 +61,56 @@ export default function Board({ readyForMatch = false, boardZonesContent }: Boar
 
 
     // Crée le JSX pour chaque zone avec son contenu définit dans le prop
-    const zones = (Object.entries(boardZonesConfig) as [PlayerType, Record<ZonesNames, ZoneConfig>][]).map(([playerType, zones]) => (
+    const zonesJSX = (Object.entries(boardZonesConfig) as [PlayerType, Record<ZonesNames, ZoneConfig>][]).map(([playerType, zones]) => (
         (Object.entries(zones) as [ZonesNames, ZoneConfig][]).map(([zoneName, zoneConfig]) => {
-            let zoneContent = boardZonesContent[playerType]?.[zoneName] || null;
+            let zoneContent = boardZonesContent[playerType][zoneName];
+            
+            // Définit le zoneContentJSX selon la zone
+            let zoneContentJSX;
+            if (["deck"].includes(zoneName)) {
+                const zoneContent_tmp = zoneContent as DeckZoneContent
+                if (zoneContent_tmp.numberOfCards <= 0) {
+                    zoneContentJSX = null!
+                } else {
+                    zoneContentJSX = <Deck numberOfCards={zoneContent_tmp.numberOfCards} isExtraDeck={zoneName == "extraDeck"} />;
+                }
+            } else if (zoneName == "extraDeck") {
+                const zoneContent_tmp = zoneContent as DeckZoneContent
+                if (zoneContent_tmp.numberOfCards <= 0) {
+                    zoneContentJSX = null!
+                } else {
+                    zoneContentJSX = <Deck numberOfCards={zoneContent_tmp.numberOfCards} isExtraDeck />;
+                }
+            } else if (["graveyard", "extraGraveyard"].includes(zoneName)) {
+                const zoneContent_tmp = zoneContent as GraveyardZoneContent
+                if (zoneContent_tmp.cardIds.length == 0) {
+                    zoneContentJSX = null!
+                } else {
+                    zoneContentJSX = <Graveyard cardIds={zoneContent_tmp.cardIds} isExtraGraveyard={zoneName == "extraGraveyard"} isBanishedZone={zoneName == "banished"} />;
+                }
+            } else {
+                const zoneContent_tmp = zoneContent as CardZoneContent
+                if ('cardId' in zoneContent_tmp && zoneContent_tmp.cardId) {
+                    if (!cards[zoneContent_tmp.cardId]) {
+                        zoneContentJSX = null!
+                    } else {
+                        zoneContentJSX = <Card cardId={zoneContent_tmp.cardId} />;
+                    }
+                }
+            }
+
 
             return (
                 <div
                     key={`${playerType}-${zoneName}`}
-                    className={`zone ${playerType} ${zoneName} ${zoneContent ? "hasContent" : "hasNoContent"}`}
+                    className={`zone ${playerType} ${zoneName} ${zoneContentJSX ? "hasContent" : "hasNoContent"}`}
                     style={{
                         "--gridRowStart": zoneConfig.gridRowStart,
                         "--gridColStart": zoneConfig.gridColStart,
                     } as React.CSSProperties}
                 >
-                    {!zoneContent && <p className="zoneName">{zoneConfig.readableName}</p>}
-                    {zoneContent && zoneContent.content}
+                    {!zoneContentJSX && <p className="zoneName">{zoneConfig.readableName}</p>}
+                    {zoneContentJSX && zoneContentJSX}
                 </div>
             )
         })
@@ -106,7 +120,7 @@ export default function Board({ readyForMatch = false, boardZonesContent }: Boar
 
     return (
         <div className={`Board ${readyForMatch ? "transitionPerspective-end" : "transitionPerspective-start"}`}>
-            {zones}
+            {zonesJSX}
         </div>
     )
 }

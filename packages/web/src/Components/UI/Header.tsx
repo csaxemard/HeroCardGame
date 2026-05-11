@@ -76,15 +76,16 @@ export default function Header() {
                     {appState.currentTheme == "light" ? "🌙" : "🔆"}
                 </button>
 
-                <div className="navDrawer-container" onMouseLeave={closeDrawer} onMouseEnter={openDrawer}>
+                {/* <div className="navDrawer-container" onMouseLeave={closeDrawer} onMouseEnter={openDrawer}>
                     <a href="/debug/card" className="navDrawerHandle navLink">
                         <span className="category">Debug</span>
                         <span className="charAsIcon"> ▿</span>
                     </a>
                     <ul className={`navDrawer hidden`}>
-                        <Link to={"/debug/card"} className="navLink navDrawerItem">Card viewer</Link>
+                        <Link to={"/debug/card/1"} className="navLink navDrawerItem">Card viewer</Link>
                     </ul>
-                </div>
+                </div> */}
+                <Link to={"/catalogue/1"} className="navLink navDrawerItem">Catalogue</Link>
                 <Link to={"/match"} className="navLink navDrawerItem">Match</Link>
                 <Link to="/" className="navLink">Accueil</Link>
 

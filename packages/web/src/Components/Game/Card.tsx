@@ -1,9 +1,8 @@
 import "./Card.css"
-import type { CardType } from "@/cards";
 import { cards } from "@/cards";
 import { useContext, useMemo, type SyntheticEvent } from "react";
-import type { PlayerType } from "./Board";
 import { MatchContext } from "@/Views/MatchContext";
+import type { PlayerType } from "@/types";
 
 interface CardProps {
     /** - Default : false */

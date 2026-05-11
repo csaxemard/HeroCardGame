@@ -1,8 +1,7 @@
-export interface CardType { id: number, name: string, type?: "hero" | "monster", img: string }
+import type { CardRoles, CardType } from "./types";
 
 
-
-export function getRandomCardId() {
+export function getRandomCardId(): number {
     const min = 0
     const max = 125
     const unavailableCardIds: number[] = [0, 2, 4, 5, 10, 15, 25, 34, 40, 41, 43, 44, 47, 48, 49, 50, 51, 52, 54, 55, 56, 57, 60, 61, 62, 63, 64, 65, 66, 68, 69, 71, 75, 76, 77, 78, 79, 80, 81, 82, 84, 85, 86, 87, 88, 89, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 109, 110, 111, 112, 115, 116, 117, 118, 119, 120, 121, 122, 123];
@@ -14,6 +13,30 @@ export function getRandomCardId() {
 
     return cardId
 }
+
+export function getRandomCardIdByRoles(
+    /**
+     * - If roles is only one of CardRoles, then return one id of that role
+     * - If roles is an Array of CardRoles, then return one id of any of those roles
+     */
+    roles: CardRoles | CardRoles[]): number {
+    // Get one id of any role of roles. If roles == array then one of them. If roles is a string then one of that role
+    if (typeof roles === "string") {
+        return cardIdsByRole[roles][Math.floor(Math.random() * cardIdsByRole[roles].length)]
+    } else {
+        const allIds = roles.reduce((acc, role) => {
+            return [...acc, ...(cardIdsByRole[role] || [])]
+        }, [] as number[])
+
+        if (allIds.length === 0) {
+            throw new Error(`No cards found for roles: ${roles.join(", ")}`);
+        }
+
+        const randomIndex = Math.floor(Math.random() * allIds.length);
+        return allIds[randomIndex];
+    }
+}
+
 
 
 
@@ -68,5 +91,13 @@ export const cards: Record<number, CardType> = {
     114: { id: 114, name: "Heras, Égerie des Civilisations Antiques", img: "/cards/114 - Heras, Égerie des Civilisations Antiques.png" },
     124: { id: 124, name: "Jack Stubborn", img: "/cards/124 - Jack Stubborn.png" },
     125: { id: 125, name: "Plume du Héros", img: "/cards/125 - Plume du Héros.png" },
+}
 
+export const cardIdsByRole: Record<CardRoles, number[]> = {
+    hero: [1, 9, 20, 26, 35, 42, 46, 67, 72],
+    darkHero: [12, 28,],
+    halfHero: [72],
+    multiHero: [16, 20],
+    monster: [3, 6, 7, 8, 11, 13, 14, 16, 17, 18, 19, 21, 22, 23, 24, 27, 29, 30, 31, 32, 33, 36, 37, 38, 39, 45, 53, 58, 59, 70, 73, 74],
+    field: [22],
 }
