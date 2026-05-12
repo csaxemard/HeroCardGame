@@ -30,7 +30,7 @@ export default function Board({ readyForMatch = false, boardZonesContent }: Boar
             shield: { readableName: "Bouclier", gridRowStart: 1, gridColStart: 4, },
             archerL: { readableName: "Archer", gridRowStart: 2, gridColStart: 5, },
             archerR: { readableName: "Archer", gridRowStart: 2, gridColStart: 3, },
-            field: { readableName: "Terrain", gridRowStart: 4, gridColStart: 5, },
+            field: { readableName: "Terrain", gridRowStart: 4, gridColStart: 5, isDisabled: true},
             deck: { readableName: "Deck", gridRowStart: 1, gridColStart: 1, },
             extraDeck: { readableName: "Extra deck", gridRowStart: 1, gridColStart: 7, },
             graveyard: { readableName: "Cimetière", gridRowStart: 3, gridColStart: 1, },
@@ -40,6 +40,7 @@ export default function Board({ readyForMatch = false, boardZonesContent }: Boar
         player: {} as Record<ZonesNames, ZoneConfig>
     };
     boardZonesConfig.player = Object.fromEntries(
+        // Generate player side from opponent
         Object.entries(boardZonesConfig.opponent).map(([zoneName, zoneConfig]) => {
             if (zoneConfig.gridRowStart == null || zoneConfig.gridColStart == null) {
                 // Pas de gridRowStart ou gridColStart pour banished
@@ -63,6 +64,8 @@ export default function Board({ readyForMatch = false, boardZonesContent }: Boar
     // Crée le JSX pour chaque zone avec son contenu définit dans le prop
     const zonesJSX = (Object.entries(boardZonesConfig) as [PlayerType, Record<ZonesNames, ZoneConfig>][]).map(([playerType, zones]) => (
         (Object.entries(zones) as [ZonesNames, ZoneConfig][]).map(([zoneName, zoneConfig]) => {
+            if (zoneName == "field") return;
+            
             let zoneContent = boardZonesContent[playerType][zoneName];
             
             // Définit le zoneContentJSX selon la zone
@@ -94,7 +97,7 @@ export default function Board({ readyForMatch = false, boardZonesContent }: Boar
                     if (!cards[zoneContent_tmp.cardId]) {
                         zoneContentJSX = null!
                     } else {
-                        zoneContentJSX = <Card cardId={zoneContent_tmp.cardId} />;
+                        zoneContentJSX = <Card cardId={zoneContent_tmp.cardId} shouldRotate={readyForMatch && true} />;
                     }
                 }
             }
@@ -119,7 +122,7 @@ export default function Board({ readyForMatch = false, boardZonesContent }: Boar
 
 
     return (
-        <div className={`Board ${readyForMatch ? "transitionPerspective-end" : "transitionPerspective-start"}`}>
+        <div className={`Board ${readyForMatch ? "transitionPerspective-end transitionPerspective-start" : ""}`}>
             {zonesJSX}
         </div>
     )

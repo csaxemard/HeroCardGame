@@ -21,20 +21,13 @@ export default function Graveyard({ cardIds, isExtraGraveyard = false, isBanishe
     const cappedCardIds = cardIds.slice(0, 8);
     const containingCards = cappedCardIds.map((cardId): CardType => cards[cardId] || null)
 
+    // Arg safeguard
     if (containingCards.includes(null!)) return <p>No card found with one of these ids : {cardIds.join(", ")}</p>
         
-    
-
     // Pour l'overlap
     const numberOfCards = cardIds.length;
     const count = Math.min(cappedCardIds.length, 5);
     const offsetX = isExtraGraveyard ? -10 : 10;
-
-    // JSX stuff
-    function getRandomRotate() {
-        return Math.floor(Math.random() * (3 - (-3) + 1)) + (-3)
-    }
-
 
 
     return (

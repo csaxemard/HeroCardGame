@@ -1,0 +1,298 @@
+// managers/MatchManager.ts
+
+export type ZoneName = 'hero' | 'swordL' | 'swordR' | 'shield' | 'archerL' | 'archerR' | 'field' | 'deck' | 'extraDeck' | 'graveyard' | 'extraGraveyard' | 'banished';
+
+export type PlayerSide = 'player' | 'opponent';
+
+export interface CardInstance {
+    cardId: number;
+    uniqueId: string;
+    attack?: number;
+    defense?: number;
+    hp?: number;
+}
+
+export interface ZoneContent {
+    card?: CardInstance;
+    faceDown?: boolean;
+}
+
+export interface PlayerState {
+    hp: number;
+    mana: number;
+    maxMana: number;
+    deck: CardInstance[];
+    extraDeck: CardInstance[];
+    hand: CardInstance[];
+    graveyard: CardInstance[];
+    extraGraveyard: CardInstance[];
+    banished: CardInstance[];
+    zones: Record<Exclude<ZoneName, 'deck' | 'extraDeck' | 'graveyard' | 'extraGraveyard' | 'banished'>, ZoneContent>;
+}
+
+export interface MatchState {
+    turn: PlayerSide;
+    phase: 'draw' | 'main' | 'battle' | 'end';
+    turnNumber: number;
+    player: PlayerState;
+    opponent: PlayerState;
+    winner?: PlayerSide;
+}
+
+export interface ActionResult {
+    success: boolean;
+    error?: string;
+    events?: GameEvent[];
+}
+
+export type GameEvent =
+    | { type: 'draw'; player: PlayerSide; cardId: number; fromDeck: 'deck' | 'extraDeck' }
+    | { type: 'playCard'; player: PlayerSide; cardId: number; fromZone: 'hand'; toZone: ZoneName }
+    | { type: 'moveCard'; player: PlayerSide; cardId: string; fromZone: ZoneName | 'hand'; toZone: ZoneName | 'graveyard' | 'extraGraveyard' | 'banished' }
+    | { type: 'attack'; attacker: PlayerSide; attackerZone: ZoneName; targetPlayer: PlayerSide; targetZone?: ZoneName }
+    | { type: 'damage'; target: PlayerSide; amount: number; source: string }
+    | { type: 'heal'; target: PlayerSide; amount: number }
+    | { type: 'phaseChange'; phase: MatchState['phase'] }
+    | { type: 'turnChange'; turn: PlayerSide }
+    | { type: 'gameEnd'; winner: PlayerSide }
+    | { type: 'manaChange'; player: PlayerSide; newMana: number };
+
+
+
+export class MatchManager {
+    private state: MatchState;
+    private eventHistory: GameEvent[] = [];
+    private subscribers: ((state: MatchState, events: GameEvent[]) => void)[] = [];
+
+    constructor(playerDeck: CardInstance[], opponentDeck: CardInstance[]) {
+        this.state = this.initializeState(playerDeck, opponentDeck);
+    }
+
+    private initializeState(playerDeck: CardInstance[], opponentDeck: CardInstance[]): MatchState {
+        const createPlayerState = (deck: CardInstance[], extraDeck: CardInstance[] = []): PlayerState => ({
+            hp: 8000,
+            mana: 0,
+            maxMana: 0,
+            deck: [...deck],
+            extraDeck: [...extraDeck],
+            hand: [],
+            graveyard: [],
+            extraGraveyard: [],
+            banished: [],
+            zones: {
+                hero: { card: undefined },
+                swordL: { card: undefined },
+                swordR: { card: undefined },
+                shield: { card: undefined },
+                archerL: { card: undefined },
+                archerR: { card: undefined },
+                field: { card: undefined }
+            }
+        });
+
+        return {
+            turn: 'player',
+            phase: 'draw',
+            turnNumber: 1,
+            player: createPlayerState(playerDeck),
+            opponent: createPlayerState(opponentDeck)
+        };
+    }
+
+    subscribe(callback: (state: MatchState, events: GameEvent[]) => void): () => void {
+        this.subscribers.push(callback);
+        return () => { this.subscribers = this.subscribers.filter(cb => cb !== callback); };
+    }
+
+    private emit(events: GameEvent[]): void {
+        this.eventHistory.push(...events);
+        this.subscribers.forEach(cb => cb(this.state, events));
+    }
+
+    private startTurn(player: PlayerSide): void {
+        const pState = this.state[player];
+        pState.maxMana = Math.min(10, pState.maxMana + 1);
+        pState.mana = pState.maxMana;
+        this.drawCard(player, 'deck');
+    }
+
+    // Pioche 5 cartes initiales pour les deux
+    startMatch(): void {
+        const events: GameEvent[] = [];
+        for (let i = 0; i < 5; i++) {
+            const playerDraw = this.drawCard('player', 'deck');
+            if (playerDraw.events) events.push(...playerDraw.events);
+            const opponentDraw = this.drawCard('opponent', 'deck');
+            if (opponentDraw.events) events.push(...opponentDraw.events);
+        }
+        this.emit(events);
+        this.startTurn('player'); // Maintenant ça existe
+        this.state.phase = 'main';
+        this.emit([{ type: 'phaseChange', phase: 'main' }]);
+    }
+
+    drawCard(player: PlayerSide, fromDeck: 'deck' | 'extraDeck'): ActionResult {
+        const pState = this.state[player];
+        const deck = fromDeck === 'deck' ? pState.deck : pState.extraDeck;
+
+        if (deck.length === 0) {
+            return { success: false, error: 'Deck vide' };
+        }
+
+        const card = deck.shift()!;
+        pState.hand.push(card);
+
+        return { success: true, events: [{ type: 'draw', player, cardId: card.cardId, fromDeck }] };
+    }
+
+    playCard(player: PlayerSide, cardUniqueId: string, targetZone: ZoneName): ActionResult {
+        const pState = this.state[player];
+        const cardIndex = pState.hand.findIndex(c => c.uniqueId === cardUniqueId);
+
+        if (cardIndex === -1) {
+            return { success: false, error: 'Carte pas en main' };
+        }
+
+        if (this.state.phase !== 'main') {
+            return { success: false, error: 'Pas la phase principale' };
+        }
+
+        if (this.state.turn !== player) {
+            return { success: false, error: "Pas ton tour" };
+        }
+
+        if (pState.zones[targetZone].card !== undefined) {
+            return { success: false, error: 'Zone déjà occupée' };
+        }
+
+        const card = pState.hand.splice(cardIndex, 1)[0];
+        pState.zones[targetZone] = { card, faceDown: false };
+
+        return {
+            success: true,
+            events: [{ type: 'playCard', player, cardId: card.cardId, fromZone: 'hand', toZone: targetZone }]
+        };
+    }
+
+    attack(attackerZone: ZoneName, targetPlayer: PlayerSide, targetZone?: ZoneName): ActionResult {
+        if (this.state.phase !== 'battle') {
+            return { success: false, error: 'Pas la phase de bataille' };
+        }
+
+        const attacker = this.state[this.state.turn];
+        const attackerCard = attacker.zones[attackerZone]?.card;
+
+        if (!attackerCard) {
+            return { success: false, error: "Pas de carte attaquante" };
+        }
+
+        let events: GameEvent[] = [];
+        const defender = this.state[targetPlayer];
+
+        if (targetZone && defender.zones[targetZone]?.card) {
+            // Attaque de monstre
+            const defenderCard = defender.zones[targetZone]!.card!;
+            events.push({ type: 'attack', attacker: this.state.turn, attackerZone, targetPlayer, targetZone });
+
+            const attackerAtk = attackerCard.attack || 0;
+            const defenderAtk = defenderCard.attack || 0;
+
+            if (attackerAtk > defenderAtk) {
+                defender.zones[targetZone] = { card: undefined };
+                defender.graveyard.push(defenderCard);
+                events.push({ type: 'moveCard', player: targetPlayer, cardId: defenderCard.uniqueId, fromZone: targetZone, toZone: 'graveyard' });
+            } else if (defenderAtk > attackerAtk) {
+                attacker.zones[attackerZone] = { card: undefined };
+                attacker.graveyard.push(attackerCard);
+                events.push({ type: 'moveCard', player: this.state.turn, cardId: attackerCard.uniqueId, fromZone: attackerZone, toZone: 'graveyard' });
+            } else {
+                // Égalité: les deux meurent
+                defender.zones[targetZone] = { card: undefined };
+                attacker.zones[attackerZone] = { card: undefined };
+                defender.graveyard.push(defenderCard);
+                attacker.graveyard.push(attackerCard);
+                events.push(
+                    { type: 'moveCard', player: targetPlayer, cardId: defenderCard.uniqueId, fromZone: targetZone, toZone: 'graveyard' },
+                    { type: 'moveCard', player: this.state.turn, cardId: attackerCard.uniqueId, fromZone: attackerZone, toZone: 'graveyard' }
+                );
+            }
+        } else {
+            // Attaque directe
+            const damage = attackerCard.attack || 0;
+            defender.hp -= damage;
+            events.push({ type: 'attack', attacker: this.state.turn, attackerZone, targetPlayer, targetZone: undefined });
+            events.push({ type: 'damage', target: targetPlayer, amount: damage, source: `attaque de ${attackerZone}` });
+
+            if (defender.hp <= 0) {
+                events.push({ type: 'gameEnd', winner: this.state.turn });
+                this.state.winner = this.state.turn;
+            }
+        }
+
+        this.emit(events);
+        return { success: true, events };
+    }
+
+    endPhase(): ActionResult {
+        const phases: MatchState['phase'][] = ['draw', 'main', 'battle', 'end'];
+        const currentIndex = phases.indexOf(this.state.phase);
+
+        if (currentIndex === phases.length - 1) {
+            return this.endTurn();
+        }
+
+        this.state.phase = phases[currentIndex + 1];
+        const events: GameEvent[] = [{ type: 'phaseChange', phase: this.state.phase }];
+
+        if (this.state.phase === 'draw') {
+            const draw = this.drawCard(this.state.turn, 'deck');
+            if (draw.events) events.push(...draw.events);
+        } else if (this.state.phase === 'end') {
+            events.push(...this.cleanupTurn());
+        }
+
+        this.emit(events);
+        return { success: true, events };
+    }
+
+    private cleanupTurn(): GameEvent[] {
+        const events: GameEvent[] = [];
+        const current = this.state[this.state.turn];
+        // Reset attaques des cartes (si tu as un système d'attack flag)
+        return events;
+    }
+
+    endTurn(): ActionResult {
+        if (this.state.phase !== 'end') {
+            const phaseResult = this.endPhase();
+            if (!phaseResult.success) return phaseResult;
+        }
+
+        const newTurn = this.state.turn === 'player' ? 'opponent' : 'player';
+        this.state.turn = newTurn;
+        this.state.turnNumber++;
+        this.state.phase = 'draw';
+
+        const events: GameEvent[] = [
+            { type: 'turnChange', turn: newTurn },
+            { type: 'phaseChange', phase: 'draw' }
+        ];
+
+        // Pioche au début du tour
+        const draw = this.drawCard(newTurn, 'deck');
+        if (draw.events) events.push(...draw.events);
+
+        // Augmente mana max et restore mana
+        const pState = this.state[newTurn];
+        pState.maxMana = Math.min(10, pState.maxMana + 1);
+        pState.mana = pState.maxMana;
+        events.push({ type: 'manaChange', player: newTurn, newMana: pState.mana });
+
+        this.emit(events);
+        return { success: true, events };
+    }
+
+    getState(): MatchState {
+        return JSON.parse(JSON.stringify(this.state));
+    }
+}

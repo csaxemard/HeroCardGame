@@ -1,0 +1,45 @@
+import { MatchManager, type CardInstance, type ZoneName } from '@/Core/MatchManager';
+import { useEffect, useState } from 'react';
+
+export default function Match() {
+
+    // Génère un deck de test
+    const generateDeck = (): CardInstance[] => {
+        const deck: CardInstance[] = [];
+        for (let i = 0; i < 30; i++) {
+            deck.push({
+                cardId: Math.floor(Math.random() * 100) + 1,
+                uniqueId: crypto.randomUUID(),
+                attack: Math.floor(Math.random() * 2000) + 500,
+                defense: Math.floor(Math.random() * 2000) + 500
+            });
+        }
+        return deck;
+    };
+    const [manager] = useState(() => new MatchManager(generateDeck(), generateDeck()));
+    const [state, setState] = useState(() => manager.getState());
+
+    useEffect(() => {
+        const unsubscribe = manager.subscribe((newState, events) => {
+            setState({ ...newState }); // Copie pour trigger re-render
+            console.log('Events:', events);
+        });
+        manager.startMatch();
+        return unsubscribe;
+    }, [manager]);
+
+    const playCardFromHand = (cardId: string, zone: ZoneName) => {
+        manager.playCard('player', cardId, zone);
+    };
+
+    return (
+        <div>
+            PV Joueur: {state.player.hp}
+            {state.player.hand.map(card => (
+                <button onClick={() => playCardFromHand(card.uniqueId, 'swordL')}>
+                    Carte {card.cardId}
+                </button>
+            ))}
+        </div>
+    );
+}

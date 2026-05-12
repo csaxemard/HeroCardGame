@@ -97,7 +97,7 @@ export const cardIdsByRole: Record<CardRoles, number[]> = {
     hero: [1, 9, 20, 26, 35, 42, 46, 67, 72],
     darkHero: [12, 28,],
     halfHero: [72],
-    multiHero: [16, 20],
+    multiHero: [],
     monster: [3, 6, 7, 8, 11, 13, 14, 16, 17, 18, 19, 21, 22, 23, 24, 27, 29, 30, 31, 32, 33, 36, 37, 38, 39, 45, 53, 58, 59, 70, 73, 74],
     field: [22],
 }

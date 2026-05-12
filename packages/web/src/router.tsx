@@ -3,7 +3,7 @@ import { createBrowserRouter } from "react-router";
 import Home from "./Views/Home";
 import CardViewer from "./Views/Catalogue";
 import Error404 from "./Views/Error404";
-import Match from "./Views/Match";
+import Match from "./Views/Match.tsx";
 
 
 

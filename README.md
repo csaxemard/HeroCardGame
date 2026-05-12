@@ -23,14 +23,19 @@ Date de départ : 14 décembre 2025
 - Bugs
     - (web/Card) fix: removeEventListener("keydown", handleEscape) not working in ModalCardFullscreen
 - Config
-    - Configurer un des serveurs de l’école pour servir mon site
-    - Mettre toutes les cartes dans une base de données au lieu de variable js
-    - Mettre un filigrane sur chaque carte, c’est important, xnconvert il le fait. (Je peux l’enlever pour l’exam peut-être). Associer l’id de rainbowpath et gricha pour que eux utilisent les cartes sans filigrane peut-être ?
+    - (web/Board) refactor: Deck et Graveyard doivent render des Card (avec isFaceDown si besoin), pas juste des img
+        - Peut-être faire un composant FaceDownCard ?
+    - (serv) Configurer un des serveurs de l’école pour servir mon site
+    - (back) Mettre toutes les cartes dans une base de données au lieu de variable js
+    - (cartes) Prendre d'autres cartes / familles depuis duellingbook
+    - (cartes) Mettre un filigrane sur chaque carte, c’est important, xnconvert il le fait. (Je peux l’enlever pour l’exam peut-être). Associer l’id de rainbowpath et gricha pour que eux utilisent les cartes sans filigrane peut-être ?
 - Gameplay (Match)
-    - je me demande si à ce stade je ne mettrais pas déjà en place la bdd, ça ne devrait pas être trop long i guess ? Compliqué surement pas. Cenqui est difficile c'est que si je le fais maintenant au lieu de le hardcoder d’abord je risque de devoir modifier les tables pour suit my needs après et ça c’est chiant je crois.
-    - Ensuite on aura le début de partie. Nourrir le deck avec 30 random cards de type non hero ou darkhero.
-    - ensuite regarder les règles pour savoir c’est quoi la première étape de la partie. Je suppose qu’il faut choisir un héro à mettre en premier ?
-    - d’ailleurs on a combien de lp ? Il me semble qu’il n’y a pas de LP et que c’est seulement quand l’adv n’a plus de héro qu’on a gagné
+    - (réfl) je me demande si à ce stade je ne mettrais pas déjà en place la bdd, ça ne devrait pas être trop long i guess ? Compliqué surement pas. Cenqui est difficile c'est que si je le fais maintenant au lieu de le hardcoder d’abord je risque de devoir modifier les tables pour suit my needs après et ça c’est chiant je crois.
+    - 
+    - (web/Match) Turn 0 - Phase 0. Basique.
+        - Ensuite on aura le début de partie. Nourrir le deck avec 30 random cards de type non hero ou darkhero.
+        - ensuite regarder les règles pour savoir c’est quoi la première étape de la partie. Je suppose qu’il faut choisir un héro à mettre en premier ?
+        - d’ailleurs on a combien de lp ? Il me semble qu’il n’y a pas de LP et que c’est seulement quand l’adv n’a plus de héro qu’on a gagné
     - (idée) ce serait tellement stylé d’avoir une version portable pour que gricha et louka puissent faire des batailles en ligne, des decks etc
     - Ensuite il faudra regarder les règles pour voir la suite du déroulement de la partie après la pose du héro, chaque joueur pioche des cartes ? Combien ? Il faudra que je représente la main aussi, que j’aie un moyen de l’afficher
     - Je vais peut-être enlever la perspective parce qu’elle est un peu galère, ah j’ai pas essayé de la mettre en absolute aussi on verra. Ce qui serait bien ce serait de ne pas avoir une perspective mais une grid controllée, avec des vraies diagonales. Mais bon ça c’est de la déco ce sera pour après. 

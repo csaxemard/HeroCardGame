@@ -4,6 +4,7 @@
     --font: Verdana, Geneva, Tahoma, sans-serif;
     --transitionDefaults: background-color .5s, color .5s;
     --linkNavFontSize: 19px;
+    --headerHeight: 70px;
 
     /* Les variables de thèmes sont stockées dans le appState et générées automatiquement */
 }

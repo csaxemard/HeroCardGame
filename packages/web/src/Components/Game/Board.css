@@ -1,8 +1,9 @@
 .Board {
     padding: 20px;
-    height: 100%;
+    height: 100vh;
+    max-height: 100vh;
     width: 100%;
-    overflow: hidden;
+    /* overflow: hidden; */
     transition: var(--transitionDefaults), transform 1s ease-out, opacity 1s;
 
     border-radius: 12px;
@@ -13,9 +14,8 @@
     gap: 20px;
     justify-items: center;
     justify-content: center;
-    /* overflow-y: hidden; */
 
-    transform: scale(min(100vw / 1100px, 100vh / 780px));
+    /* transform: scale(min(100vw / 1100px, 100vh / 780px)); */
 
     &.transitionPerspective-start {
         transform: perspective(500px) translate3d(0, 0, 0) rotateX(80deg) !important;
@@ -59,7 +59,8 @@
         &.opponent {
             border-color: darksalmon;
             rotate: 180deg;
-            filter: brightness(.5);
+            opacity: .5;
+            /* filter: brightness(.5); */
         }
 
         &.hasNoContent {

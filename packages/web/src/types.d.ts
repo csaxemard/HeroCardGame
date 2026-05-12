@@ -13,7 +13,7 @@ export type AppState = {
 
 
 
-// --- Concernant les cartes, le plateau et les matchs ---
+// --- Concernant les cartes et le plateau ---
 
 export type PlayerType = "opponent" | "player";
 export type CardRoles = "hero" | "darkHero" | "halfHero" | "multiHero" | "monster" | "field";
@@ -23,7 +23,7 @@ export type ZonesNames = "hero" | "swordL" | "swordR" | "shield" | "archerL" | "
 
 export interface CardType { id: number, name: string, type?: "hero" | "monster", img: string }
 
-export interface ZoneConfig { readableName: string; gridRowStart?: number; gridColStart?: number; }
+export interface ZoneConfig { readableName: string; gridRowStart?: number; gridColStart?: number; isDisabled?: boolean }
 
 /**
  * - Peut être une Card, ou autre chose, mais qui sera le node enfant de la zone
@@ -57,4 +57,9 @@ export type HalfBoardZonesContent = {
 
 export type BoardZonesConfig = Record<PlayerType, Record<ZonesNames, ZoneConfig>>;
 export type BoardZonesContent = Record<PlayerType, HalfBoardZonesContent>;
+
+
+
+// --- Conernant les matchs ---
+
 
