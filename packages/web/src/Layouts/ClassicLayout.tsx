@@ -1,6 +1,6 @@
 import { useContext, type ReactNode } from "react"
-import Header from "@/Components/UI/Header"
-import Footer from "@/Components/UI/Footer"
+import Header from "@/Components/WebsiteUI/Header"
+import Footer from "@/Components/WebsiteUI/Footer"
 import { AppContext } from "@/AppContext";
 
 interface Props {

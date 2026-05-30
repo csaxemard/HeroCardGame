@@ -4,11 +4,13 @@ import ClassicLayout from "@/Layouts/ClassicLayout";
 import { cardIdsByRole, cards, getRandomCardIdByRoles } from "@/cards";
 import { MatchContext } from "./MatchContext";
 import "./Match.css"
-import ModalCardFullscreen from "@/Components/Game/ModalCardFullscreen";
-import Board from "@/Components/Game/Board";
+import ModalCardFullscreen from "@/Components/GameElements/ModalCardFullscreen";
+import Board from "@/Components/GameElements/Board";
 import type { BoardZonesContent, PlayerType, ZonesNames } from "@/types";
 import { useMatch } from "@/Core/UseMatch";
 import { MatchManager } from "@/Core/MatchManager";
+import InfosBox, { addInfo } from "@/Components/MatchUI/InfosBox";
+
 
 
 export default function Match() {
@@ -120,6 +122,7 @@ export default function Match() {
 
 
     const [showBoard, set_showBoard] = useState(false)
+    const [showDecideFirstPlayer, set_showDecideFirstPlayer] = useState(false)
     // Concernant modalCardFullscreen
     const [showModalCardFullscreen, set_showModalCardFullscreen] = useState(false)
     const [modalCardFullscreen_cardId, set_modalCardFullscreen_cardId] = useState<number>()
@@ -156,15 +159,17 @@ export default function Match() {
         }
     })
     useEffect(() => {
-        // fillBoardZonesContentWithRandom()
+        set_showBoard(true);
+        fillBoardZonesContentWithRandom();
 
+        (window as any).a = addInfo
         // Init game :
-        const playerGenDecks = generateDecks();
-        const opponentGenDecks = generateDecks();
+        // const playerGenDecks = generateDecks();
+        // const opponentGenDecks = generateDecks();
 
-        const matchManager = new MatchManager(playerGenDecks, opponentGenDecks, true);
-        (window as any).ms = matchManager.matchState
-        matchManager.startMatch()
+        // const matchManager = new MatchManager(playerGenDecks, opponentGenDecks, true);
+        // (window as any).ms = matchManager.matchState
+        // matchManager.startMatch()
     }, [])
 
 
@@ -179,12 +184,26 @@ export default function Match() {
         <ClassicLayout hideFooter={true}>
             <main className="Match">
                 <MatchContext value={showModal}>
-                    {showBoard &&
-                        <Board
-                            // readyForMatch
-                            boardZonesContent={boardZonesContent}
-                        />
-                    }
+
+                    <div className="left">
+                        {showBoard &&
+                            <div className="boardContainer fullHeight">
+                                <Board
+                                    // readyForMatch
+                                    boardZonesContent={boardZonesContent}
+                                />
+                            </div>
+                        }
+                        {showDecideFirstPlayer &&
+                            <div className="modal decideFirstPlayer">
+                                div
+                            </div>
+                        }
+                    </div>
+
+                    <div className="right">
+                        <InfosBox />
+                    </div>
 
                     {showModalCardFullscreen && <ModalCardFullscreen card={cards[modalCardFullscreen_cardId!]} removeModal={removeModal} />}
                 </MatchContext>

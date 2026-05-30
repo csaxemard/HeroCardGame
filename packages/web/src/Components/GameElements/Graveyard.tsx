@@ -1,6 +1,8 @@
 import type { CardType } from "@/types";
 import "./Graveyard.css"
 import { cards } from "@/cards";
+import type { CSSProperties } from "styled-components";
+import Card from "./Card";
 
 
 
@@ -34,7 +36,9 @@ export default function Graveyard({ cardIds, isExtraGraveyard = false, isBanishe
         <div className={`Graveyard` + (isExtraGraveyard ? ' isExtraGraveyard' : '')}>
             <div className="cardsStack">
                 {containingCards.map((card, i) => (
-                    <img key={`${card.name}-${i}`} src={card.img} style={{ transform: `translate(${i * offsetX}px)`, rotate: `${i * (isExtraGraveyard ? -1 : 1) }deg` }} />
+                    <div key={`${card.name}-${i}`} className="gy-cardContainer" style={{ "--transformValue": `translate(${i * offsetX}px)`, rotate: `${i * (isExtraGraveyard ? -1 : 1)}deg` } as CSSProperties}>
+                        <Card cardId={card.id} />
+                    </div>
                 ))}
             </div>
             <span className="numberOfCards" style={{ transform: `translate(${(count - 1) * offsetX}px, ${(count - 1) * offsetX * (isExtraGraveyard ? -1 : 1)}px)` }}>{numberOfCards}</span>

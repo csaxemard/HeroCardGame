@@ -1,5 +1,22 @@
 .Match {
-    /* position: relative; */
+    /* height: 100%; */
+    width: 100%; 
 
+    /* padding-left: 50px; */
+    display: grid;
+    grid-template-columns: 1fr 350px;
+    /* column-gap: 50px; */
 
+    
+    .boardContainer {
+        height: calc(var(--fullHeightWithHeader) - 100px);
+    }
+    
+    & > .Board {
+        grid-column-start: 1;
+        padding: 12px 80px;
+    }
+    & > .InfosBox {
+        grid-column-start: 2;
+    }
 }

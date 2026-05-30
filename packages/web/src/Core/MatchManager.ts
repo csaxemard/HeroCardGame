@@ -1,5 +1,5 @@
 import type { PlayerType } from "@/types";
-
+import { addInfo } from "@/Components/MatchUI/InfosBox";
 
 interface PlayerDecks { deck: number[]; extraDeck: number[]; };
 type FightingZoneContent = number | null;
@@ -98,7 +98,7 @@ export class MatchManager {
     // Match phases
     startMatch() {
         this.matchState.turn = 0
-        console.log("--- Début du match ---")
+        addInfo("--- Début du match ---")
         this.decideFirstPlayer()
         while (!this.matchState.winner) {
             this.startTurn()
@@ -107,29 +107,24 @@ export class MatchManager {
 
     // Actions concernant tour 0
     decideFirstPlayer() {
-        console.log("Lancer de pièce...")
+        addInfo("Lancer de pièce...")
         const coinTossWinner = Math.random() < .5 ? "player" : "opponent"
-        let choice; let asking = true;
-        do {
-            if (coinTossWinner == "player") {
-                console.log("Vous décidez qui commence.")
-                if (this.debug) {
-                    choice = "1"
-                } else {
-                    choice = prompt("Quel joueur commence ?\n1 : Vous | 2 : Adversaire")
-                }
+
+        let choice;
+        if (coinTossWinner == "player") {
+            addInfo("Vous décidez qui commence.")
+            choice = !this.debug ? prompt("Quel joueur commence ?\n1 : Vous | 2 : Adversaire") : "1" 
+        } else {
+            addInfo("Le joueur adverse décide qui commence.")
+            if (this.debug) {
+                choice = "1"
             } else {
-                console.log("Le joueur adverse décide qui commence.")
-                if (this.debug) {
-                    choice = "1"
-                } else {
-                    choice = prompt("Cher adversaire. Quel joueur commence ?\n1 : Vous | 2 : Adversaire")
-                }
+                choice = prompt("Cher adversaire. Quel joueur commence ?\n1 : Vous | 2 : Adversaire")
             }
-            if (choice == "1" || choice == "2") asking = false
-        } while (asking);
+        }
+        
         this.matchState.currentPlayer = choice == "1" ? "player" : "opponent"
-        console.log(this.matchState.currentPlayer == "player" ? "Vous commencez la partie." : "Le joueur adverse commence la partie.")
+        addInfo(this.matchState.currentPlayer == "player" ? "Vous commencez la partie." : "Le joueur adverse commence la partie.")
     }
 
     // Actions concernant match phase duel
@@ -138,8 +133,8 @@ export class MatchManager {
      */
     startTurn() {
         this.matchState.turn! += 1
-        console.log(`Tour ${this.matchState.turn} :`)
-        console.log(`\tPhase: ${this.matchState.phase}`)
+        addInfo(`Tour ${this.matchState.turn} :`)
+        addInfo(`\tPhase: ${this.matchState.phase}`)
         if (this.matchState.turn !== 1) this.startDrawPhase()
         this.startStandbyPhase()
         this.startFlipPhase()

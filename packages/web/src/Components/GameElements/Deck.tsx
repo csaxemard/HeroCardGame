@@ -1,3 +1,4 @@
+import Card from "./Card";
 import "./Deck.css"
 
 
@@ -23,7 +24,9 @@ export default function Deck({ numberOfCards, isExtraDeck = false }: DeckProps) 
         <div className={`Deck` + (isExtraDeck ? ' isExtraDeck' : '')}>
             <div className="cardsStack">
                 {[...Array(count)].map((_, i) => (
-                    <img key={i} src={ !isExtraDeck ? "/cardBack.png" : "/extraCardBack.png"} style={{ transform: `translate(${i * offset}px, ${i * 3}px)` }} />
+                    <div className="Deck-cardContainer" key={i} style={{ transform: `translate(${i * offset}px, ${i * 3}px)` }} >
+                        <Card cardId={0} isFaceDown isExtra={isExtraDeck} />
+                    </div>
                 ))}
             </div>
             <span className="numberOfCards" style={{ transform: `translate(${(count - 1) * offset}px, ${(count - 1) * offset * (isExtraDeck ? -1 : 1)}px)` }}>{numberOfCards}</span>

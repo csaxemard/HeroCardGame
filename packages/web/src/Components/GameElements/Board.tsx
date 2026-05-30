@@ -30,7 +30,7 @@ export default function Board({ readyForMatch = false, boardZonesContent }: Boar
             shield: { readableName: "Bouclier", gridRowStart: 1, gridColStart: 4, },
             archerL: { readableName: "Archer", gridRowStart: 2, gridColStart: 5, },
             archerR: { readableName: "Archer", gridRowStart: 2, gridColStart: 3, },
-            field: { readableName: "Terrain", gridRowStart: 4, gridColStart: 5, isDisabled: true},
+            field: { readableName: "Terrain", gridRowStart: 4, gridColStart: 5, isDisabled: true },
             deck: { readableName: "Deck", gridRowStart: 1, gridColStart: 1, },
             extraDeck: { readableName: "Extra deck", gridRowStart: 1, gridColStart: 7, },
             graveyard: { readableName: "Cimetière", gridRowStart: 3, gridColStart: 1, },
@@ -65,9 +65,9 @@ export default function Board({ readyForMatch = false, boardZonesContent }: Boar
     const zonesJSX = (Object.entries(boardZonesConfig) as [PlayerType, Record<ZonesNames, ZoneConfig>][]).map(([playerType, zones]) => (
         (Object.entries(zones) as [ZonesNames, ZoneConfig][]).map(([zoneName, zoneConfig]) => {
             if (zoneName == "field") return;
-            
+
             let zoneContent = boardZonesContent[playerType][zoneName];
-            
+
             // Définit le zoneContentJSX selon la zone
             let zoneContentJSX;
             if (["deck"].includes(zoneName)) {
@@ -112,8 +112,8 @@ export default function Board({ readyForMatch = false, boardZonesContent }: Boar
                         "--gridColStart": zoneConfig.gridColStart,
                     } as React.CSSProperties}
                 >
-                    {!zoneContentJSX && <p className="zoneName">{zoneConfig.readableName}</p>}
-                    {zoneContentJSX && zoneContentJSX}
+                    {!zoneContentJSX ? <p className="zoneName">{zoneConfig.readableName}</p>
+                        : zoneContentJSX}
                 </div>
             )
         })
@@ -124,6 +124,7 @@ export default function Board({ readyForMatch = false, boardZonesContent }: Boar
     return (
         <div className={`Board ${readyForMatch ? "transitionPerspective-end transitionPerspective-start" : ""}`}>
             {zonesJSX}
+            {/* <div className="boardSeparator"></div> */}
         </div>
     )
 }

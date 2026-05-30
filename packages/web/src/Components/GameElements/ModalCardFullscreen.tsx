@@ -1,4 +1,4 @@
-import type { Card as CardType } from "@/cards"
+import type { CardType } from "@/types"
 import "./ModalCardFullscreen.css"
 import { useEffect } from "react"
 

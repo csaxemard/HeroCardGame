@@ -8,31 +8,38 @@
     justify-content: center;
     user-select: none;
     /* background: linear-gradient(147deg, rgba(115, 186, 61, 1) 0%, rgba(23, 247, 255, 1) 38%, rgba(0, 115, 255, 1) 55%, rgba(8, 0, 255, 1) 69%, rgba(81, 0, 255, 1) 85%, rgba(250, 2, 246, 1) 100%); */
+    z-index: 100;
 
     .numberOfCards {
         position: absolute;
         filter: drop-shadow(0 0px 10px white);
-        visibility: hidden;
+        /* visibility: hidden; */
     }
 
     .cardsStack {
         position: relative;
+        width: 100%;
         height: 100%;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
 
-        img {
-            position: absolute;
-            width: auto;
+        .gy-cardContainer {
             height: 100%;
-            object-fit: contain;
+            width: fit-content;
+            position: absolute;
+            transform: var(--transformValue);
+            .Card {
+                transition: transform .0s;
+            }
+            &:not(:last-child):hover .Card {
+                transform: translateY(-50px);
+                height: 100%;
+            }
+        }
 
-            border: 1px solid black;
-            border-radius: 4px;
-            user-select: none;
-            -webkit-user-drag: none;
+        img {
         }
     }
 }

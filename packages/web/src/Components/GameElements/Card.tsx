@@ -7,16 +7,20 @@ import type { PlayerType } from "@/types";
 interface CardProps {
     /** - Default : false */
     isGrabbable?: boolean,
+    /** - Default : false */
     isSelectable?: boolean,
+    /** Si isFaceDown, mettre 0 comme cardId */
     isFaceDown?: boolean,
-    /**
-     * - Rotate card slightly to add realism (default: false)
-     */
+    /** - Rotate card slightly to add realism (default: false) */
     shouldRotate?: boolean,
     /** - Default : true */
     hasRoundedCorners?: boolean,
-    cardId: number,
+    /** - Default : true */
+    hasBorder?: boolean,
+    isExtra?: boolean
     ownerPlayerType?: PlayerType
+    /** Si isFaceDown, mettre 0 comme cardId */
+    cardId: number,
 }
 
 
@@ -24,7 +28,7 @@ interface CardProps {
 /**
  * - max-width et max-height sont 100%, donc la taille est définie par le container de la Card
  */
-export default function Card({ isGrabbable = false, isSelectable = false, hasRoundedCorners = true, isFaceDown, cardId, shouldRotate = false }: CardProps) {
+export default function Card({ isGrabbable = false, isSelectable = false, hasRoundedCorners = false, hasBorder = true, isFaceDown, isExtra, cardId, shouldRotate = false }: CardProps) {
     function handleCardClick(e: SyntheticEvent) {
         const target = e.currentTarget as HTMLElement;
 
@@ -37,17 +41,22 @@ export default function Card({ isGrabbable = false, isSelectable = false, hasRou
         target.addEventListener("mousemove", cleanup, { once: true });
         target.addEventListener('mouseup', cleanup, { once: true });
     }
+    function handleCardRClick(e: SyntheticEvent) {
+        e.preventDefault()
+        if (isFaceDown) return
+        showModal?.(cardId);
+    }
 
 
 
     // Context pour ModalCardFullscreen
     let canTriggerShowModal = false
     const showModal = useContext(MatchContext)
-    if (showModal) canTriggerShowModal = true
+    if (showModal && !isFaceDown) canTriggerShowModal = true
 
     // Récupère la carte associée à l'id
     const card = cards[cardId] ?? null
-    if (!card) return <p>No card found with id {cardId}</p>
+    if (!card && !isFaceDown) return <p>No card found with id {cardId}</p>
 
     // JSX stuff
     let randomRotate = null
@@ -66,15 +75,19 @@ export default function Card({ isGrabbable = false, isSelectable = false, hasRou
                 (isGrabbable ? " isGrabbable" : "") +
                 (isSelectable ? " isSelectable" : "") +
                 (hasRoundedCorners ? " hasRoundedCorners" : "") +
-                (isFaceDown ? " isFaceDown" : "")
+                (isFaceDown ? " isFaceDown" : "") +
+                (hasBorder ? " hasBorder" : "")
             }
             // data-id={card.id}
             style={shouldRotate ? { transform: `rotate(${randomRotate}deg)` } : undefined}
             onMouseDown={canTriggerShowModal ? handleCardClick : undefined}
+            onContextMenu={canTriggerShowModal ? handleCardRClick : undefined}
         >
             {!isFaceDown ?
                 <img src={card.img} alt={card.name} />
-                : <img src="/cardBack.png" alt="cardBack" />
+                : isExtra ?
+                    <img src="/extraCardBack.png" alt="cardBack" />
+                    : <img src="/cardBack.png" alt="cardBack" />
             }
 
             {/* <div className="tooltipRecordingMouseDownTime"></div> */}

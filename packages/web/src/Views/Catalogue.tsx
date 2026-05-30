@@ -1,5 +1,5 @@
 import ClassicLayout from "@/Layouts/ClassicLayout"
-import Card from "../Components/Game/Card"
+import Card from "../Components/GameElements/Card"
 import { useNavigate, useParams } from "react-router"
 import { cards } from "@/cards"
 import styled from "styled-components"

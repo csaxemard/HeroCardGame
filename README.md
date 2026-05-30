@@ -11,13 +11,9 @@ Date de départ : 14 décembre 2025
 
 ## Backlog
 ### Current
-- (web/Match) Add Deck
-    - ✅ Vider toutes les zones.
-    - Remplir seulement le deck et l’extradeck avec un composant Deck, isExtraDeck.
-    - Le composant Deck il return une div avec une img de CardBack
-    - Et il a un props avec remainingCards qui est une liste de cards, et il affiche un absolute remainingCards.length sur la pile du Deck.
-    - Ok ça c’était le deck / extradeck.
-    - Demander à gpt si c’est mieux de faire deux comp deck et extradeck ou si un seul avec un prop isExtraDeck est mieux
+- (web/Match) Add basic match steps required to win
+    - Je suis là : Continuer de faire les phases du tour dans le déroulé basic du match
+    - Puis envoyer à gpt
 
 ### Next
 - Bugs
@@ -31,8 +27,7 @@ Date de départ : 14 décembre 2025
     - (cartes) Mettre un filigrane sur chaque carte, c’est important, xnconvert il le fait. (Je peux l’enlever pour l’exam peut-être). Associer l’id de rainbowpath et gricha pour que eux utilisent les cartes sans filigrane peut-être ?
 - Gameplay (Match)
     - (réfl) je me demande si à ce stade je ne mettrais pas déjà en place la bdd, ça ne devrait pas être trop long i guess ? Compliqué surement pas. Cenqui est difficile c'est que si je le fais maintenant au lieu de le hardcoder d’abord je risque de devoir modifier les tables pour suit my needs après et ça c’est chiant je crois.
-    - 
-    - (web/Match) Turn 0 - Phase 0. Basique.
+    - 🔹(web/Match) Turn 0 - Phase 0. Basique.
         - Ensuite on aura le début de partie. Nourrir le deck avec 30 random cards de type non hero ou darkhero.
         - ensuite regarder les règles pour savoir c’est quoi la première étape de la partie. Je suppose qu’il faut choisir un héro à mettre en premier ?
         - d’ailleurs on a combien de lp ? Il me semble qu’il n’y a pas de LP et que c’est seulement quand l’adv n’a plus de héro qu’on a gagné
@@ -68,7 +63,9 @@ Date de départ : 14 décembre 2025
 
 ### Quick start
 - Cloner repo
-- Dézipper `z-resources/heroCards_20260424.7z` dans `web/public/cards`
+- Récupérer `z-resources/heroCards_20260424.7z` ailleurs, et le dézipper dans `/packages/web/public/cards`
+- Exécuter `npm i`, puis `npm audit fix`
+
 
 ### Commandes
 ```plaintext
