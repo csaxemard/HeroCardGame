@@ -35,24 +35,27 @@ interface MatchState {
     phase: "draw" | "standby" | "flip" | "attack" | "shift" | "end" | null,
     coinTossWinner: PlayerType | null,
     winner: PlayerType | null,
+    defeatCause: "noHeroesLeft" | "emptyDeck" | null
     firstPlayer: PlayerType | null,
     currentPlayer: PlayerType | null,
     player: PlayerState
     opponent: PlayerState,
 }
 
-interface MatchStateDebugOptions {
-    shouldSkipDecidesFirstPlayer?: PlayerType
+interface ActionResult { success: boolean; error?: string; }
+interface MatchManagerDebugOptions {
+    skipDecideFirstPlayer?: PlayerType,
+    opponentIsRandomBot?: boolean,
 }
 
 
 
 export class MatchManager {
     matchState: MatchState;
-    debugOptions: MatchStateDebugOptions;
+    debugOptions: MatchManagerDebugOptions;
     private subscribers: ((state: MatchState) => void)[] = [];
 
-    constructor(playerDecks: PlayerDecks, opponentDecks: PlayerDecks, debugOptions: MatchStateDebugOptions = {}) {
+    constructor(playerDecks: PlayerDecks, opponentDecks: PlayerDecks, debugOptions: MatchManagerDebugOptions = {}) {
         this.matchState = this.initializeState(playerDecks, opponentDecks)
         this.debugOptions = debugOptions;
     }
@@ -64,6 +67,7 @@ export class MatchManager {
             phase: null,
             coinTossWinner: null,
             winner: null,
+            defeatCause: null,
             firstPlayer: null,
             currentPlayer: null,
             player: {
@@ -102,16 +106,18 @@ export class MatchManager {
             },
         }
     }
+
     uninitializeMatchManager() {
         document.removeEventListener("custom-onFirstPlayerChosen", this.startTurnsLoop)
         document.removeEventListener("custom-onMatchWon", this.startTurnsLoop)
     }
 
-    subscribe(callback: (state: MatchState) => void): () => void {
+    subscribe(callback: (matchState: MatchState) => void): () => void {
         this.subscribers.push(callback);
         return () => { this.subscribers = this.subscribers.filter(cb => cb !== callback); };
     }
 
+    /** - Trigger re-render de Match  */
     private emit() {
         this.subscribers.forEach(cb => cb(this.matchState));
     }
@@ -119,29 +125,23 @@ export class MatchManager {
 
 
 
-    // Match phases
+    // Etapes concernant le début du match
     startMatch() {
         addInfo(`--- Début du match ---\n${Object.keys(this.debugOptions).length != 0 ? "Debug options : " + Object.entries(this.debugOptions).filter(([_, val]) => val).map(([name]) => name).join(", ") : ""}`)
         this.decideFirstPlayer()
 
-        document.addEventListener("custom-onFirstPlayerChosen", this.startTurnsLoop)
+        // document.addEventListener("custom-onFirstPlayerChosen", this.startTurnsLoop)
     }
-    private startTurnsLoop = () => {
-        // Fonction flêchée car eventlistener enlève l'accès au this sinon
-        UiFunctions.set_currentLeftPanel("board")
-        
-        this.startTurn()
-    }
-    // Actions concernant le début du match
-    decideFirstPlayer() {
+
+    private decideFirstPlayer() {
         addInfo("Lancer de pièce...")
         this.matchState.coinTossWinner = Math.random() < .5 ? "player" : "opponent"
 
         UiFunctions.set_currentLeftPanel("decidingFirstPlayer")
 
-        if (this.debugOptions.shouldSkipDecidesFirstPlayer) {
+        if (this.debugOptions.skipDecideFirstPlayer) {
             setTimeout(() => {
-                this.setFirstPlayer(this.debugOptions.shouldSkipDecidesFirstPlayer!)
+                this.setFirstPlayer(this.debugOptions.skipDecideFirstPlayer!)
             }, 0);
             return
         }
@@ -154,42 +154,58 @@ export class MatchManager {
         }
     }
 
-    // Actions concernant match phase duel
-    startTurn() {
-        if (!this.matchState.turn) this.matchState.turn = 0
+    private startTurnsLoop = () => {
+        // Fonction flêchée car eventlistener enlève l'accès au this sinon
+        UiFunctions.set_currentLeftPanel("board")
+
+        // chaque joueur mélange son deck
+        for (const player of (["player", "opponent"] as PlayerType[])) this.shuffleDeck(player)
+
+        // Chaque joueur pioche 4 cartes
+        if (this.debugOptions.opponentIsRandomBot) {
+            for (let i = 0; i < 4; i++) this.drawCard("opponent")
+        }
+
+        this.startTurn()
+    }
+
+
+
+    // Etapes concernant les tours et leurs phases
+    private startTurn() {
+        if (!this.matchState.turn) this.matchState.turn = 1
         else this.matchState.turn += 1
 
-        addInfo(`Tour ${this.matchState.turn ? "initial" : this.matchState.turn}`)
-        addInfo(`\tPhase: ${this.matchState.phase}`)
-        if (this.matchState.turn !== 1) this.startDrawPhase()
-        this.startStandbyPhase()
-        this.startFlipPhase()
-        this.startAttackPhase()
-        this.startShiftPhase()
-        setTimeout(() => {
-            this.startEndPhase()
-        }, 5000);
+        addInfo(`Tour ${this.matchState.turn}`)
+        if (![1, 2].includes(this.matchState.turn)) this.startDrawPhase()
+        else this.startStandbyPhase()
     }
-    startDrawPhase() {
-        addInfo(`Tour ${this.matchState.turn} : Draw Phase`)
-        if (this.matchState[this.matchState.currentPlayer!].deck.length <= 0) {
-            this.setWinner(this.matchState.currentPlayer!)
+    private startDrawPhase() {
+        this.matchState.phase = "draw"
+        addInfo(`\tDraw Phase`)
+
+
+        const drawResult = this.drawCard(this.matchState.currentPlayer!)
+        if (drawResult.error == "Deck vide") {
+            this.setWinner(this.matchState.currentPlayer === 'player' ? 'opponent' : 'player', "emptyDeck");
+            return;
         }
+
+        this.startStandbyPhase()
+    }
+    private startStandbyPhase() {
         console.log("Method not implemented.");
     }
-    startStandbyPhase() {
+    private startFlipPhase() {
         console.log("Method not implemented.");
     }
-    startFlipPhase() {
+    private startAttackPhase() {
         console.log("Method not implemented.");
     }
-    startAttackPhase() {
+    private startShiftPhase() {
         console.log("Method not implemented.");
     }
-    startShiftPhase() {
-        console.log("Method not implemented.");
-    }
-    startEndPhase() {
+    private startEndPhase() {
         console.log("Method not implemented.");
         prompt("end phase")
         if (!this.matchState.winner) {
@@ -198,29 +214,58 @@ export class MatchManager {
     }
 
 
-    // Actions concernant match phase end
+
+    // Actions concernant les zones et les cartes
+    drawCard(player: PlayerType): ActionResult {
+        const pState = this.matchState[player];
+        const deck = pState.deck;
+
+        if (deck.length === 0) {
+            addInfo("Deck vide. Impossible de piocher")
+            return { success: false, error: 'Deck vide' };
+        }
+
+        const cardId = deck.shift()!;
+        pState.hand.push(cardId);
+        this.emit();
+
+        return { success: true };
+    }
+
+    shuffleDeck(player: PlayerType): void {
+        const pState = this.matchState[player];
+        for (let i = pState.deck.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [pState.deck[i], pState.deck[j]] = [pState.deck[j], pState.deck[i]];
+        }
+        this.emit();
+    }
 
 
-
-    // Wrappers de setters :
+    // Actions concernant l'exécution du match (once only)
     setFirstPlayer(firstPlayer: PlayerType) {
         this.matchState.currentPlayer = firstPlayer
         this.emit();
 
-        addInfo(this.matchState.currentPlayer == "player" ? "Vous commencez la partie." : "Le joueur adverse commence la partie.")
-        document.dispatchEvent(new CustomEvent("custom-onFirstPlayerChosen", { cancelable: true, bubbles: true }))
+        addInfo(this.matchState.currentPlayer == "player" ? "Vous commencerez la partie." : "Le joueur adverse commencera la partie.")
+        this.startTurnsLoop()
+        // document.dispatchEvent(new CustomEvent("custom-onFirstPlayerChosen", { cancelable: true, bubbles: true }))
     }
-    setWinner(winner: PlayerType) {
+    setWinner(winner: PlayerType, defeatCause: "noHeroesLeft" | "emptyDeck") {
         this.matchState.winner = winner
-        addInfo(this.matchState.winner == "player" ? "Félicitations, vous remportez la partie." : "Le joueur adverse remporte la partie.")
-        document.dispatchEvent(new CustomEvent("custom-onMatchWon", { cancelable: true, bubbles: true }))
+        this.matchState.defeatCause = defeatCause
+        addInfo(this.matchState.winner == "player" ? "Vous remportez la partie" : "L'adversaire remporte la partie")
+        this.emit()
     }
-    // add38() {
-    //     this.matchState.opponent.hand.push(getRandomCardId())
-    //     this.emit();
-    // }
-    // add38p() {
-    //     this.matchState.player.hand.push(getRandomCardId())
-    //     this.emit();
-    // }
+
+
+
+    // Fonctions debug
+    addRandomCardToHand(playerToGiveCard: PlayerType) {
+        this.matchState[playerToGiveCard].hand.push(getRandomCardId())
+        this.emit();
+    }
+    killPlayer(player: PlayerType, defeatCause: "noHeroesLeft" | "emptyDeck") {
+        this.setWinner(player === 'player' ? 'opponent' : 'player', defeatCause);
+    }
 }

@@ -21,11 +21,12 @@ Date de départ : 14 décembre 2025
 - Config
     - (web/Board) refactor: Deck et Graveyard doivent render des Card (avec isFaceDown si besoin), pas juste des img
         - Peut-être faire un composant FaceDownCard ?
+    - (web) Captcha / Protections anti bots
     - (serv) Configurer un des serveurs de l’école pour servir mon site
     - (back) Mettre toutes les cartes dans une base de données au lieu de variable js
     - (cartes) Prendre d'autres cartes / familles depuis duellingbook
     - (cartes) Mettre un filigrane sur chaque carte, c’est important, xnconvert il le fait. (Je peux l’enlever pour l’exam peut-être). Associer l’id de rainbowpath et gricha pour que eux utilisent les cartes sans filigrane peut-être ?
-- Gameplay (Match)
+- Match
     - (réfl) je me demande si à ce stade je ne mettrais pas déjà en place la bdd, ça ne devrait pas être trop long i guess ? Compliqué surement pas. Cenqui est difficile c'est que si je le fais maintenant au lieu de le hardcoder d’abord je risque de devoir modifier les tables pour suit my needs après et ça c’est chiant je crois.
     - 🔹(web/Match) Turn 0 - Phase 0. Basique.
         - Ensuite on aura le début de partie. Nourrir le deck avec 30 random cards de type non hero ou darkhero.
@@ -38,6 +39,7 @@ Date de départ : 14 décembre 2025
     - Et ensuite tour 1 - premier joueur, qu’est-ce qu’il a comme options ? Il peut poser un monstre, invoquer par rituel un dark héro etc etc, implémenter les règles une par une, mais d’abord celles de base qui permettent d’avoir une partie complète. Pas d’invocation, pas d’effet flip. Pas de dark héro, juste les héros qui se tapent dessus et quand un héro n’a plus de PV il va au extra-cimetière et on choisit un autre héro à mettre à la place, et quand il n’y a plus de héro un joueur a gagné et l’autre a perdu.
     - Coder chaque carte une par une
     - Faire en sorte qu’on puisse faire une partie en temps réel entre deux ordis
+    - Ajouter un chat, faire qu'un joueur puisse écrire des messages dans le InfosBox, ou ajouter des émotes
 - Autres parties du site
     - Faire un catalogue de cartes
         - Nécessite la bdd

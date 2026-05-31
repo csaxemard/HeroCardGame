@@ -6,16 +6,17 @@
     max-width: 350px;
     overflow: hidden;
 
-    background: #1e1e2f;
+    background: var(--bgColoredPurple);
     /* background: #313138; */
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .infos-header {
-    background: #2a2a3a;
+    /* background: #2a2a3a; */
+    background: var(--bgColoredPurpleTop1);
     /* background: #36363c; */
-    color: #fff;
+    /* color: #fff; */
     font-weight: 600;
     font-size: 14px;
     border-bottom: 1px solid #3a3a4a;
@@ -52,8 +53,9 @@
 
 .infos-message {
     /* background: #2e2e39; */
-    background: #2a2a3a;
-    color: #e0e0e0;
+    /* background: #2a2a3a; */
+    background: var(--bgColoredPurpleTop1);
+    /* color: #e0e0e0; */
     padding: 8px 12px;
     border-radius: 8px;
     font-size: 13px;

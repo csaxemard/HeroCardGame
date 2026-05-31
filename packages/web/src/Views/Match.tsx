@@ -150,7 +150,8 @@ export default function Match() {
     const playerGenDecks = generateDecks();
     const opponentGenDecks = generateDecks();
     const playerCustomDeck = {
-        deck: [3, 3, 3],
+        deck: [3, 3, 11, 11, 11, 31, 31, 31, 38, 38, 38, 3, 3, 11, 11, 11, 31, 31, 31, 38, 38, 38, 3, 3, 11, 11, 11, 31, 31, 31, 38, 38, 38],
+
         extraDeck: [1, 9, 20],
     }
 
@@ -158,7 +159,9 @@ export default function Match() {
     const [currentLeftPanel, set_currentLeftPanel] = useState<CurrentLeftPanel>(null)
     const [showModalCardFullscreen, set_showModalCardFullscreen] = useState(false)
     const [modalCardFullscreen_cardId, set_modalCardFullscreen_cardId] = useState<number>()
-    const [matchManager] = useState(new MatchManager(playerCustomDeck, opponentGenDecks, {shouldSkipDecidesFirstPlayer: false}));
+    const [hideModalMatchEnd, set_hideModalMatchEnd] = useState(false)
+    // const [matchManager] = useState(new MatchManager(playerCustomDeck, opponentGenDecks)); // Sans debug
+    const [matchManager] = useState(new MatchManager(playerCustomDeck, opponentGenDecks, { skipDecideFirstPlayer: "player", opponentIsRandomBot: true }));
     const [matchState, setmatchState] = useState(() => matchManager.matchState);
     const boardZonesContent = {
         // Est mis à jour automatiquement avec les valeurs du matchState quand il est updaté avec la subscription car il en dépend
@@ -226,7 +229,7 @@ export default function Match() {
 
 
 
-    
+
     // expose les fonctions internal exportée en haut
     useEffect(() => {
         set_currentLeftPanel_internal = (value: CurrentLeftPanel) => {
@@ -237,19 +240,19 @@ export default function Match() {
             set_currentLeftPanel_internal = null;
         };
     }, []);
-    
+
     // Init game
     useEffect(() => {
         // set_showBoard(true);
         // fillBoardZonesContentWithRandom();
-        
+
         const unsubscribe = matchManager.subscribe((newMatchState) => {
             setmatchState({ ...newMatchState });
         });
         (window as any).ms = matchState;
-        
+
         matchManager.startMatch();
-        
+
         return () => {
             matchManager.uninitializeMatchManager()
             unsubscribe()
@@ -258,7 +261,7 @@ export default function Match() {
 
     const boardAndHandsContainerRef = useRef<HTMLDivElement>(null);
     const leftRef = useRef<HTMLDivElement>(null);
-    
+
 
 
 
@@ -287,23 +290,66 @@ export default function Match() {
                             </div>
                         }
                         {currentLeftPanel == "board" &&
-                            <div className="boardAndHandsContainer" ref={boardAndHandsContainerRef}>
-                                <Hand key={matchState.opponent.hand.length + "b"} cardsIds={matchState.opponent.hand} isOpponentHand parentLeftRef={leftRef}/>
-                                <div className="boardContainer fullHeight">
-                                    <Board
-                                        // readyForMatch
-                                        boardZonesContent={boardZonesContent}
-                                    />
+                            <>
+                                {matchState.winner &&
+                                    <div className={"modal matchEnd" + (matchState.winner == "player" ? " playerWon" : "") + (hideModalMatchEnd ? " hideModalMatchEnd" : "")}>
+                                        {!hideModalMatchEnd &&
+                                            <div className="message">
+                                                {matchState.winner == "player" ?
+                                                    <>
+                                                        {matchState.defeatCause == "noHeroesLeft" ?
+                                                            <p>Vous avez vaincu les 3 héros de l'adversaire</p>
+                                                            : <p>L'adversaire n'a plus de carte à piocher</p>
+                                                        }
+                                                        <br /><p>Félicitations, vous remportez la victoire !</p>
+                                                    </>
+                                                    : <>
+                                                        {matchState.defeatCause == "noHeroesLeft" ?
+                                                            <p>Vos 3 héros ont été vaincus</p>
+                                                            : <p>Vous n'avez plus de carte à piocher</p>
+                                                        }
+                                                        <br /><p>L'adversaire remporte la victoire !</p>
+                                                    </>
+                                                }
+                                            </div>
+                                        }
+                                    </div>
+                                }
+                                <div className="boardAndHandsContainer" ref={boardAndHandsContainerRef}>
+                                    <Hand key={matchState.opponent.hand.length + "b"} cardsIds={matchState.opponent.hand} isOpponentHand parentLeftRef={leftRef} />
+                                    <div className="boardContainer fullHeight">
+                                        <Board
+                                            // readyForMatch
+                                            boardZonesContent={boardZonesContent}
+                                        />
+                                    </div>
+                                    <Hand key={matchState.opponent.hand.length} cardsIds={matchState.player.hand} parentLeftRef={leftRef} />
                                 </div>
-                                <Hand key={matchState.opponent.hand.length} cardsIds={matchState.player.hand} parentLeftRef={leftRef}/>
-                            </div>
+                            </>
                         }
                     </div>
 
                     <div className="right">
+                        <button className="flexIAlignEnd">
+                            <svg className="icon">
+                                <use href="#manual" />
+                            </svg>
+                        </button>
+
+
                         <InfosBox />
-                        {/* <button onClick={() => matchManager.add38()}>Ajouter une carte opponent</button>
-                        <button onClick={() => matchManager.add38p()}>Ajouter une carte player</button> */}
+                        <button onClick={() => matchManager.drawCard("opponent")}>Draw opponent</button>
+                        <button onClick={() => matchManager.drawCard("player")}>Draw player</button>
+                        {/* {canGoToNextPhase && <button onClick={() => matchManager.goToNextPhase()}>Passer à la phase suivante</button>} */}
+                        {matchState.winner &&
+                            <button onClick={() => set_hideModalMatchEnd(!hideModalMatchEnd)}>Voir / cacher le plateau</button>
+                        }
+
+                        {/* Debug : */}
+                        <button onClick={() => matchManager.killPlayer("player", "emptyDeck")}>Kill Player</button>
+                        <button onClick={() => matchManager.killPlayer("opponent", "emptyDeck")}>Kill Opponent</button>
+                        {/* <button onClick={() => matchManager.addRandomCardToHand("opponent")}>Ajouter une carte à la main (adv)</button>
+                        <button onClick={() => matchManager.addRandomCardToHand("player")}>Ajouter une carte à la main (vous)</button> */}
                     </div>
 
                     {showModalCardFullscreen && <ModalCardFullscreen card={cards[modalCardFullscreen_cardId!]} removeModal={removeModal} />}

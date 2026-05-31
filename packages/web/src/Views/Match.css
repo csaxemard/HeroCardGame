@@ -7,6 +7,7 @@
     grid-template-columns: 1fr 350px;
 
     .left {
+        position: relative;
         overflow-y: auto;
         overflow-x: hidden;
         max-height: var(--fullHeightWithHeader);
@@ -27,13 +28,57 @@
 
         .boardAndHandsContainer {
             margin-bottom: 50px;
-            
+
             display: flex;
             flex-direction: column;
             gap: 20px;
 
             .boardContainer {
                 height: calc(var(--fullHeightWithHeader) - 140px);
+            }
+        }
+
+        .modal.matchEnd {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 100;
+            backdrop-filter: blur(5px);
+
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            &.hideModalMatchEnd {
+                backdrop-filter: none;
+            }
+
+            &.playerWon .message {
+                background-color: var(--bgColoredOrange);
+                border: 2px solid var(--bgColoredPurpleTop1);
+                outline: 5px solid var(--bgColoredOrange);
+            }
+            
+            .message {
+                padding: 20px;
+                border-radius: 12px;
+                background-color: var(--bgColoredPurpleTop1);
+                border: 2px solid var(--bgColoredOrange);
+                outline: 5px solid var(--bgColoredPurpleTop1);
+                font-size: 1.2em;
+
+                p {
+                    text-align: center;
+                }
+            }
+
+            button {
+                position: absolute;
+                right: 50px;
+                bottom: 50px;
             }
         }
 

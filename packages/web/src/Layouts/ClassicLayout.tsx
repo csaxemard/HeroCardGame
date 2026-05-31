@@ -2,6 +2,7 @@ import { useContext, type ReactNode } from "react"
 import Header from "@/Components/WebsiteUI/Header"
 import Footer from "@/Components/WebsiteUI/Footer"
 import { AppContext } from "@/AppContext";
+import SvgSprites from "@/Components/SvgSprites";
 
 interface Props {
     /**
@@ -25,6 +26,7 @@ export default function ClassicLayout({ hideFooter = false, children }: Props) {
             <Header />
             {children}
             {!hideFooter && <Footer />}
+            <SvgSprites/>
         </div>
     )
 }

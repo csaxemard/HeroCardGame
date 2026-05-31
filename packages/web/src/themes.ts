@@ -70,6 +70,9 @@ const themes = {
     bgTop2: ["#e0e0e0", "#606060"],
     bgTop3: ["#f0f0f0", "#707070"],
     bgTop1Colored: ["#ecf2fc", "#4b5056"],
+    bgColoredPurple: ["#a0a0ff", "#1e1e2f"],
+    bgColoredPurpleTop1: ["#d3d3ff", "#2a2a3a"],
+    bgColoredOrange: ["#fcd088", "#ae8746"],
     bgSub1: ["#ffffff", "#2f2f2f"],
 
     /* Effects */
