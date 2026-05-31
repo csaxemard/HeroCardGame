@@ -262,6 +262,32 @@ export default function Match() {
         };
     }, [matchManager])
 
+    const [animating, setAnimating] = useState(false);
+
+    useEffect(() => {
+        if (animationQueue.length && !animating) {
+            const anim = animationQueue[0];
+            setAnimating(true);
+
+            const flyingCard = document.createElement('div');
+            flyingCard.className = 'flying-card';
+            flyingCard.style.transform = `translate(${anim.from.left}px, ${anim.from.top}px)`;
+            document.body.appendChild(flyingCard);
+
+            requestAnimationFrame(() => {
+                flyingCard.style.transition = 'transform 0.2s';
+                flyingCard.style.transform = `translate(${anim.to.left}px, ${anim.to.top}px)`;
+            });
+
+            setTimeout(() => {
+                flyingCard.remove();
+                anim.onComplete();
+                animationQueue.shift();
+                setAnimating(false);
+            }, 200);
+        }
+    }, [animationQueue]);
+
     const boardAndHandsContainerRef = useRef<HTMLDivElement>(null);
     const leftRef = useRef<HTMLDivElement>(null);
 

@@ -1,32 +1,32 @@
-import type { PlayerType } from "@/types";
+import type { CardInstance, PlayerType, ZonesNames } from "@/types";
 import { addInfo } from "@/Components/MatchUI/InfosBox";
-import { UiFunctions } from "@/Views/Match";
 import { getRandomCardId } from "@/cards";
+import { v4 as uuidv4 } from 'uuid';
+
 
 interface PlayerDecks { deck: number[]; extraDeck: number[]; };
-type FightingZoneContent = number | null;
 
 /**
  * - Contains the state of each players sides during match
  */
 interface PlayerState {
     heroesLeft: number
-    deck: number[],
-    extraDeck: number[],
-    hand: number[],
     hasDrawnInitialCards: boolean;
-    graveyard: number[],
-    extraGraveyard: number[],
-    banished: number[],
     numberOfCardsToDraw: number,
     normalInvocationsLeft: number,
+    deck: CardInstance[],
+    extraDeck: CardInstance[],
+    hand: CardInstance[],
+    graveyard: CardInstance[],
+    extraGraveyard: CardInstance[],
+    banished: CardInstance[],
     fightingZones: {
-        hero: FightingZoneContent,
-        swordL: FightingZoneContent,
-        swordR: FightingZoneContent,
-        archerL: FightingZoneContent,
-        archerR: FightingZoneContent,
-        shield: FightingZoneContent,
+        hero: CardInstance | null,
+        swordL: CardInstance | null,
+        swordR: CardInstance | null,
+        archerL: CardInstance | null,
+        archerR: CardInstance | null,
+        shield: CardInstance | null,
     };
 }
 
@@ -52,12 +52,21 @@ interface MatchManagerDebugOptions {
     autoInitialDraw?: boolean,
 }
 
+export type MatchEvent =
+    | { type: 'CARD_DRAWN'; player: PlayerType; cardId: number; instanceId: string }
+    | { type: 'CARD_MOVED'; cardId: number; from: string; to: string }
+    | { type: 'PHASE_CHANGED'; phase: string }
+    | { type: 'TURN_CHANGED'; player: PlayerType }
+    | { type: 'GAME_OVER'; winner: PlayerType };
+
 
 
 export class MatchManager {
     matchState: MatchState;
     debugOptions: MatchManagerDebugOptions;
     private subscribers: ((state: MatchState) => void)[] = [];
+    lastDrawnCard: { player: PlayerType, cardId: number, timestamp: number } | null | undefined;
+    private eventListeners: ((event: MatchEvent) => void)[] = [];
 
     constructor(playerDecks: PlayerDecks, opponentDecks: PlayerDecks, debugOptions: MatchManagerDebugOptions = {}) {
         this.matchState = this.initializeState(playerDecks, opponentDecks)
@@ -118,8 +127,8 @@ export class MatchManager {
     }
 
     uninitializeMatchManager() {
-        document.removeEventListener("custom-onFirstPlayerChosen", this.startTurnsLoop)
-        document.removeEventListener("custom-onMatchWon", this.startTurnsLoop)
+        // document.removeEventListener("custom-onFirstPlayerChosen", this.startTurnsLoop)
+        // document.removeEventListener("custom-onMatchWon", this.startTurnsLoop)
     }
 
     subscribe(callback: (matchState: MatchState) => void): () => void {
@@ -132,6 +141,14 @@ export class MatchManager {
         this.subscribers.forEach(cb => cb(this.matchState));
     }
 
+    onEvent(callback: (event: MatchEvent) => void) {
+        this.eventListeners.push(callback);
+    }
+
+    private emitEvent(event: MatchEvent) {
+        this.eventListeners.forEach(cb => cb(event));
+    }
+
 
 
 
@@ -141,14 +158,12 @@ export class MatchManager {
         addInfo(`--- Début du match ---`, true)
         this.decideFirstPlayer()
 
-        // document.addEventListener("custom-onFirstPlayerChosen", this.startTurnsLoop)
     }
 
     private decideFirstPlayer() {
         addInfo("Lancer de pièce...")
         this.matchState.coinTossWinner = Math.random() < .5 ? "player" : "opponent"
 
-        UiFunctions.set_currentLeftPanel("decidingFirstPlayer")
 
         if (this.debugOptions.skipDecideFirstPlayer) {
             setTimeout(() => {
@@ -169,7 +184,6 @@ export class MatchManager {
 
     private startTurnsLoop = () => {
         // Fonction flêchée car eventlistener enlève l'accès au this sinon
-        UiFunctions.set_currentLeftPanel("board")
 
 
         // chaque joueur mélange son deck
@@ -279,8 +293,10 @@ export class MatchManager {
             }
 
             const cardId = deck.shift()!;
-            pState.hand.push(cardId);
-            this.matchState[player].numberOfCardsToDraw--;
+            const instanceId = uuidv4();
+            const card = { cardId, instanceId };
+            pState.hand.push(card);
+            this.emitEvent({ type: 'CARD_DRAWN', player, cardId, instanceId });
         }
         this.emit();
         return { success: true };
@@ -294,13 +310,18 @@ export class MatchManager {
 
         addInfo(this.matchState.currentPlayer == "player" ? "Vous commencerez la partie." : "Le joueur adverse commencera la partie.")
         this.startTurnsLoop()
-        // document.dispatchEvent(new CustomEvent("custom-onFirstPlayerChosen", { cancelable: true, bubbles: true }))
     }
     setWinner(winner: PlayerType, defeatCause: "noHeroesLeft" | "emptyDeck") {
         this.matchState.winner = winner
         this.matchState.defeatCause = defeatCause
         addInfo(this.matchState.winner == "player" ? "Vous remportez la partie" : "L'adversaire remporte la partie")
         this.emit()
+    }
+
+
+
+    // Fonctions concernant l'esthétique
+    summonCard(card: CardInstance, originZone: ZonesNames, targetZone: ZonesNames): ActionResult {
     }
 
 

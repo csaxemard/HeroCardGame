@@ -5,10 +5,11 @@ import "./Hand.css";
 interface HandProps {
     cardsIds: number[];
     isOpponentHand?: boolean;
-    parentLeftRef?: React.RefObject<HTMLDivElement | null>
+    parentLeftRef?: React.RefObject<HTMLDivElement | null>,
+    lastDrawnCard
 }
 
-export default function Hand({ cardsIds, isOpponentHand = false, parentLeftRef }: HandProps) {
+export default function Hand({ cardsIds, isOpponentHand = false, parentLeftRef, lastDrawnCard }: HandProps) {
     function adjustOverlap(container: HTMLElement) {
         const cards = Array.from(container.children) as HTMLElement[];
         if (cards.length < 2) return;
@@ -35,6 +36,9 @@ export default function Hand({ cardsIds, isOpponentHand = false, parentLeftRef }
 
     const cardsContainerRef = useRef<HTMLDivElement>(null);
     const [canTranslateOnHover, setCanTranslateOnHover] = useState(false);
+
+    const lastDrawn = matchManager.lastDrawnCard;
+    const isAnimating = lastDrawn && lastDrawn.player === player && Date.now() - lastDrawn.timestamp < 300;
 
 
 

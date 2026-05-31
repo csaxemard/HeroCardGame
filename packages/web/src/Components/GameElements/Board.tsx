@@ -98,7 +98,10 @@ export default function Board({ readyForMatch = false, boardZonesContent, onClic
                     if (!cards[zoneContent_tmp.cardId]) {
                         zoneContentJSX = null!
                     } else {
-                        zoneContentJSX = <Card cardId={zoneContent_tmp.cardId} shouldRotate={readyForMatch && true} />;
+                        zoneContentJSX = <Card
+                            cardId={cardInstance.cardId}
+                            layoutId={cardInstance.instanceId}
+                            shouldRotate={readyForMatch && true} />;
                     }
                 }
             }

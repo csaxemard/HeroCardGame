@@ -20,8 +20,16 @@ export type CardRoles = "hero" | "darkHero" | "halfHero" | "multiHero" | "monste
 export type MonsterSubRoles = "fighter" | "shield" | "archer";
 export type CardTypes = "opponent" | "player";
 export type ZonesNames = "hero" | "swordL" | "swordR" | "shield" | "archerL" | "archerR" | "field" | "deck" | "extraDeck" | "graveyard" | "extraGraveyard" | "banished";
+export type ZonesNamesByPlayer = {
+    player: "hero" | "swordL" | "swordR" | "shield" | "archerL" | "archerR" | "field" | "deck" | "extraDeck" | "graveyard" | "extraGraveyard" | "banished";
+    opponent: "hero" | "swordL" | "swordR" | "shield" | "archerL" | "archerR" | "field" | "deck" | "extraDeck" | "graveyard" | "extraGraveyard" | "banished";
+}
 
 export interface CardType { id: number, name: string, type?: "hero" | "monster", img: string }
+export interface CardInstance {
+    cardId: number;
+    instanceId: string; // UUID
+}
 
 export interface ZoneConfig { readableName: string; gridRowStart?: number; gridColStart?: number; isDisabled?: boolean }
 
