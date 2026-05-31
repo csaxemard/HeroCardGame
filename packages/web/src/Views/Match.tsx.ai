@@ -16,6 +16,9 @@ export default function Match() {
         }
         return deck;
     };
+
+
+
     const [manager] = useState(() => new MatchManager(generateDeck(), generateDeck()));
     const [state, setState] = useState(() => manager.getState());
 

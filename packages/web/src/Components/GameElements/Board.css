@@ -20,7 +20,7 @@
     transition: var(--transitionDefaults), transform 1s ease-out, opacity 1s;
     border-radius: 12px;
 
-    padding: 20px 80px;
+    padding: 12px 80px;
     display: grid;
     /* grid-template-columns: repeat(7, 140px); */
     /* grid-template-rows: repeat(8, 80px); */

@@ -70,11 +70,11 @@ export default function Header() {
             <Link to="/" className="appLogoLink">Hero Card Game</Link>
 
             <nav className="navbar">
-                <button className="charAsIcon themeSwitch" type="button" role="switch"
+                {/* <button className="charAsIcon themeSwitch" type="button" role="switch"
                     onClick={switchTheme}
                     title="Activer / Désactiver le mode sombre">
                     {appState.currentTheme == "light" ? "🌙" : "🔆"}
-                </button>
+                </button> */}
 
                 {/* <div className="navDrawer-container" onMouseLeave={closeDrawer} onMouseEnter={openDrawer}>
                     <a href="/debug/card" className="navDrawerHandle navLink">

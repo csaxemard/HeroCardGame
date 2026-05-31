@@ -1,0 +1,41 @@
+.Hand {
+    height: 50px;
+    max-height: 50px;
+    width: calc(100vw - 350px);
+    max-width: calc(100vw - 350px);
+
+    padding: 0 20px;
+
+    &.opponent {
+        rotate: 180deg;
+        overflow: hidden;
+    }
+
+    &.player {
+        .cardContainer.canTranslateOnHover {
+            transition: margin-top .2s, border-bottom .2s;
+
+            &:hover {
+                margin-top: -100px;
+                border-bottom: 100px solid transparent;
+            }
+        }
+    }
+
+    .cardsContainer {
+        height: 300%;
+        width: 100%;
+        max-width: 100%;
+
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+
+        .cardContainer {
+            flex: 0 0 auto;
+            border-color: transparent;
+            margin-top: 0;
+            border-bottom: 0 solid transparent;
+        }
+    }
+}

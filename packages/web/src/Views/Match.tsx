@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState, type ReactElement } from "react";
 
 import ClassicLayout from "@/Layouts/ClassicLayout";
-import { cardIdsByRole, cards, getRandomCardIdByRoles } from "@/cards";
+import { cardIdsByRole, cards, getRandomCardId, getRandomCardIdByRoles } from "@/cards";
 import { MatchContext } from "./MatchContext";
 import "./Match.css"
 import ModalCardFullscreen from "@/Components/GameElements/ModalCardFullscreen";
@@ -10,6 +10,28 @@ import type { BoardZonesContent, PlayerType, ZonesNames } from "@/types";
 import { useMatch } from "@/Core/UseMatch";
 import { MatchManager } from "@/Core/MatchManager";
 import InfosBox, { addInfo } from "@/Components/MatchUI/InfosBox";
+import Card from "@/Components/GameElements/Card";
+import Hand from "@/Components/GameElements/Hand";
+
+
+
+type CurrentLeftPanel = "decidingFirstPlayer" | "board" | "matchEndCard" | null
+
+
+
+
+let set_currentLeftPanel_internal: ((value: CurrentLeftPanel) => void) | null = null;
+
+export const UiFunctions = {
+    set_currentLeftPanel: (value: CurrentLeftPanel) => {
+        if (set_currentLeftPanel_internal) {
+            set_currentLeftPanel_internal(value); // appelle la vraie fonction qui modifie le state
+        } else {
+            console.warn("(Match) Match non monté, impossible de set_currentLeftPanel");
+        }
+    },
+}
+
 
 
 
@@ -23,50 +45,50 @@ export default function Match() {
         set_showModalCardFullscreen(false)
     }
 
-    function fillBoardZonesContentWithRandom() {
-        set_boardZonesContent(prev => {
-            return (
-                Object.fromEntries(
-                    Object.entries(prev).map(([playerType, zones]) => [
-                        playerType,
-                        Object.fromEntries(
-                            (Object.entries(zones) as [ZonesNames, any | null][]).map(([zoneName, zoneContent]) => {
-                                let newZoneContent;
+    // function fillBoardZonesContentWithRandom() {
+    //     set_boardZonesContent(prev => {
+    //         return (
+    //             Object.fromEntries(
+    //                 Object.entries(prev).map(([playerType, zones]) => [
+    //                     playerType,
+    //                     Object.fromEntries(
+    //                         (Object.entries(zones) as [ZonesNames, any | null][]).map(([zoneName, zoneContent]) => {
+    //                             let newZoneContent;
 
-                                if (["graveyard", "extraGraveyard"].includes(zoneName)) {
-                                    newZoneContent = zoneContent.cardIds?.length == 0
-                                        ? {
-                                            cardIds: Array.from({ length: Math.floor(Math.random() * 10) + 1 }, () => (
-                                                zoneName == "extraGraveyard"
-                                                    ? getRandomCardIdByRoles(["darkHero", "halfHero", "hero", "multiHero"])
-                                                    : getRandomCardIdByRoles("monster")
-                                            ))
-                                        }
-                                        : zoneContent
-                                } else if (["deck", "extraDeck"].includes(zoneName)) {
-                                    newZoneContent = zoneContent.numberOfCards <= 0
-                                        ? { numberOfCards: (Math.floor(Math.random() * (12 - 1 + 1)) + 1) }
-                                        : zoneContent
-                                } else {
-                                    newZoneContent = zoneContent.cardId == undefined
-                                        ? {
-                                            cardId: (zoneName == "hero"
-                                                ? getRandomCardIdByRoles(["darkHero", "halfHero", "hero", "multiHero"])
-                                                : getRandomCardIdByRoles(["monster", "field"]))
-                                        } : zoneContent
-                                }
+    //                             if (["graveyard", "extraGraveyard"].includes(zoneName)) {
+    //                                 newZoneContent = zoneContent.cardIds?.length == 0
+    //                                     ? {
+    //                                         cardIds: Array.from({ length: Math.floor(Math.random() * 10) + 1 }, () => (
+    //                                             zoneName == "extraGraveyard"
+    //                                                 ? getRandomCardIdByRoles(["darkHero", "halfHero", "hero", "multiHero"])
+    //                                                 : getRandomCardIdByRoles("monster")
+    //                                         ))
+    //                                     }
+    //                                     : zoneContent
+    //                             } else if (["deck", "extraDeck"].includes(zoneName)) {
+    //                                 newZoneContent = zoneContent.numberOfCards <= 0
+    //                                     ? { numberOfCards: (Math.floor(Math.random() * (12 - 1 + 1)) + 1) }
+    //                                     : zoneContent
+    //                             } else {
+    //                                 newZoneContent = zoneContent.cardId == undefined
+    //                                     ? {
+    //                                         cardId: (zoneName == "hero"
+    //                                             ? getRandomCardIdByRoles(["darkHero", "halfHero", "hero", "multiHero"])
+    //                                             : getRandomCardIdByRoles(["monster", "field"]))
+    //                                     } : zoneContent
+    //                             }
 
-                                return [
-                                    zoneName,
-                                    newZoneContent
-                                ]
-                            })
-                        )
-                    ])
-                ) as BoardZonesContent
-            )
-        })
-    }
+    //                             return [
+    //                                 zoneName,
+    //                                 newZoneContent
+    //                             ]
+    //                         })
+    //                     )
+    //                 ])
+    //             ) as BoardZonesContent
+    //         )
+    //     })
+    // }
 
     function generateDecks(): { deck: number[], extraDeck: number[] } {
         const deckSize = Math.floor(Math.random() * 11) + 30; // 30-40
@@ -119,64 +141,128 @@ export default function Match() {
         return { deck, extraDeck };
     }
 
+    function choseFirstPlayer(playerType: PlayerType) {
+
+    }
 
 
-    const [showBoard, set_showBoard] = useState(false)
-    const [showDecideFirstPlayer, set_showDecideFirstPlayer] = useState(false)
-    // Concernant modalCardFullscreen
+
+    const playerGenDecks = generateDecks();
+    const opponentGenDecks = generateDecks();
+    const playerCustomDeck = {
+        deck: [3, 3, 3],
+        extraDeck: [1, 9, 20],
+    }
+
+    // Variables state :
+    const [currentLeftPanel, set_currentLeftPanel] = useState<CurrentLeftPanel>(null)
     const [showModalCardFullscreen, set_showModalCardFullscreen] = useState(false)
     const [modalCardFullscreen_cardId, set_modalCardFullscreen_cardId] = useState<number>()
+    const [matchManager] = useState(new MatchManager(playerCustomDeck, opponentGenDecks, {shouldSkipDecidesFirstPlayer: false}));
+    const [matchState, setmatchState] = useState(() => matchManager.matchState);
+    const boardZonesContent = {
+        // Est mis à jour automatiquement avec les valeurs du matchState quand il est updaté avec la subscription car il en dépend
+        player: {
+            hero: matchState.player.fightingZones.hero ? { cardId: matchState.player.fightingZones.hero } : {},
+            swordL: matchState.player.fightingZones.swordL ? { cardId: matchState.player.fightingZones.swordL } : {},
+            swordR: matchState.player.fightingZones.swordR ? { cardId: matchState.player.fightingZones.swordR } : {},
+            shield: matchState.player.fightingZones.shield ? { cardId: matchState.player.fightingZones.shield } : {},
+            archerL: matchState.player.fightingZones.archerL ? { cardId: matchState.player.fightingZones.archerL } : {},
+            archerR: matchState.player.fightingZones.archerR ? { cardId: matchState.player.fightingZones.archerR } : {},
+            field: {},
+            deck: { numberOfCards: matchState.player.deck.length },
+            extraDeck: { numberOfCards: matchState.player.extraDeck.length },
+            graveyard: { cardIds: matchState.player.graveyard },
+            extraGraveyard: { cardIds: matchState.player.extraGraveyard },
+            banished: { cardIds: matchState.player.banished },
+        },
+        opponent: {
+            hero: matchState.opponent.fightingZones.hero ? { cardId: matchState.opponent.fightingZones.hero } : {},
+            swordL: matchState.opponent.fightingZones.swordL ? { cardId: matchState.opponent.fightingZones.swordL } : {},
+            swordR: matchState.opponent.fightingZones.swordR ? { cardId: matchState.opponent.fightingZones.swordR } : {},
+            shield: matchState.opponent.fightingZones.shield ? { cardId: matchState.opponent.fightingZones.shield } : {},
+            archerL: matchState.opponent.fightingZones.archerL ? { cardId: matchState.opponent.fightingZones.archerL } : {},
+            archerR: matchState.opponent.fightingZones.archerR ? { cardId: matchState.opponent.fightingZones.archerR } : {},
+            field: {},
+            deck: { numberOfCards: matchState.opponent.deck.length },
+            extraDeck: { numberOfCards: matchState.opponent.extraDeck.length },
+            graveyard: { cardIds: matchState.opponent.graveyard },
+            extraGraveyard: { cardIds: matchState.opponent.extraGraveyard },
+            banished: { cardIds: matchState.opponent.banished },
+        }
+    };
 
     // Définit le contenu des zones du Board
-    const [boardZonesContent, set_boardZonesContent] = useState<BoardZonesContent>({
-        opponent: {
-            hero: {},
-            swordL: {},
-            swordR: {},
-            shield: {},
-            archerL: {},
-            archerR: {},
-            field: {},
-            deck: { numberOfCards: 0 },
-            extraDeck: { numberOfCards: 0 },
-            graveyard: { cardIds: [] },
-            extraGraveyard: { cardIds: [] },
-            banished: { cardIds: [] },
-        },
-        player: {
-            hero: {},
-            swordL: {},
-            swordR: {},
-            shield: {},
-            archerL: {},
-            archerR: {},
-            field: {},
-            deck: { numberOfCards: 0 },
-            extraDeck: { numberOfCards: 0 },
-            graveyard: { cardIds: [] },
-            extraGraveyard: { cardIds: [] },
-            banished: { cardIds: [] },
-        }
-    })
+    // const [boardZonesContent, set_boardZonesContent] = useState<BoardZonesContent>({
+    //     opponent: {
+    //         hero: {},
+    //         swordL: {},
+    //         swordR: {},
+    //         shield: {},
+    //         archerL: {},
+    //         archerR: {},
+    //         field: {},
+    //         deck: { numberOfCards: 0 },
+    //         extraDeck: { numberOfCards: 0 },
+    //         graveyard: { cardIds: [] },
+    //         extraGraveyard: { cardIds: [] },
+    //         banished: { cardIds: [] },
+    //     },
+    //     player: {
+    //         hero: {},
+    //         swordL: {},
+    //         swordR: {},
+    //         shield: {},
+    //         archerL: {},
+    //         archerR: {},
+    //         field: {},
+    //         deck: { numberOfCards: 0 },
+    //         extraDeck: { numberOfCards: 0 },
+    //         graveyard: { cardIds: [] },
+    //         extraGraveyard: { cardIds: [] },
+    //         banished: { cardIds: [] },
+    //     }
+    // })
+
+
+
+    
+    // expose les fonctions internal exportée en haut
     useEffect(() => {
-        set_showBoard(true);
-        fillBoardZonesContentWithRandom();
+        set_currentLeftPanel_internal = (value: CurrentLeftPanel) => {
+            set_currentLeftPanel(value);
+        };
 
-        (window as any).a = addInfo
-        // Init game :
-        // const playerGenDecks = generateDecks();
-        // const opponentGenDecks = generateDecks();
+        return () => {
+            set_currentLeftPanel_internal = null;
+        };
+    }, []);
+    
+    // Init game
+    useEffect(() => {
+        // set_showBoard(true);
+        // fillBoardZonesContentWithRandom();
+        
+        const unsubscribe = matchManager.subscribe((newMatchState) => {
+            setmatchState({ ...newMatchState });
+        });
+        (window as any).ms = matchState;
+        
+        matchManager.startMatch();
+        
+        return () => {
+            matchManager.uninitializeMatchManager()
+            unsubscribe()
+        };
+    }, [matchManager])
 
-        // const matchManager = new MatchManager(playerGenDecks, opponentGenDecks, true);
-        // (window as any).ms = matchManager.matchState
-        // matchManager.startMatch()
-    }, [])
+    const boardAndHandsContainerRef = useRef<HTMLDivElement>(null);
+    const leftRef = useRef<HTMLDivElement>(null);
+    
 
 
-    // const [currentPlayer, set_currentPlayer] = useState<PlayerType>(
-    // const [playerHand, setPlayerHand] = useState<number[]>([]);
-    // const [opponentHandCount, setOpponentHandCount] = useState(0);
-    // const { state, playCard, endTurn } = useMatch(playerDeck, opponentDeck);
+
+    // JSX :
 
 
 
@@ -184,25 +270,40 @@ export default function Match() {
         <ClassicLayout hideFooter={true}>
             <main className="Match">
                 <MatchContext value={showModal}>
-
-                    <div className="left">
-                        {showBoard &&
-                            <div className="boardContainer fullHeight">
-                                <Board
-                                    // readyForMatch
-                                    boardZonesContent={boardZonesContent}
-                                />
+                    <div className="left" ref={leftRef}>
+                        {currentLeftPanel == "decidingFirstPlayer" &&
+                            <div className="decidingFirstPlayer">
+                                {!matchState.coinTossWinner && <p className="error">"(Match) Erreur : matchState.coinTossWinner est null"</p>}
+                                {matchState.coinTossWinner == "opponent" ?
+                                    <p>Le joueur adverse décide qui commencera la partie<span>...</span></p>
+                                    : <>
+                                        <p>Choisissez le joueur qui commencera la partie</p>
+                                        <div className="flexHori">
+                                            <button onClick={() => matchManager.setFirstPlayer("player")}>Moi</button>
+                                            <button onClick={() => matchManager.setFirstPlayer("opponent")}>Adversaire</button>
+                                        </div>
+                                    </>
+                                }
                             </div>
                         }
-                        {showDecideFirstPlayer &&
-                            <div className="modal decideFirstPlayer">
-                                div
+                        {currentLeftPanel == "board" &&
+                            <div className="boardAndHandsContainer" ref={boardAndHandsContainerRef}>
+                                <Hand key={matchState.opponent.hand.length + "b"} cardsIds={matchState.opponent.hand} isOpponentHand parentLeftRef={leftRef}/>
+                                <div className="boardContainer fullHeight">
+                                    <Board
+                                        // readyForMatch
+                                        boardZonesContent={boardZonesContent}
+                                    />
+                                </div>
+                                <Hand key={matchState.opponent.hand.length} cardsIds={matchState.player.hand} parentLeftRef={leftRef}/>
                             </div>
                         }
                     </div>
 
                     <div className="right">
                         <InfosBox />
+                        {/* <button onClick={() => matchManager.add38()}>Ajouter une carte opponent</button>
+                        <button onClick={() => matchManager.add38p()}>Ajouter une carte player</button> */}
                     </div>
 
                     {showModalCardFullscreen && <ModalCardFullscreen card={cards[modalCardFullscreen_cardId!]} removeModal={removeModal} />}

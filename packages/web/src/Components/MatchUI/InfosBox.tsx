@@ -59,7 +59,7 @@ export default function InfosBox() {
     useEffect(() => {
         // On remplit addInfo_internal qui est externe avec une fonction qui modifie le state
         addInfo_internal = (text: string) => {
-            setMessages(prev => [{ id: nextIdRef.current++, text }, ...prev]);
+            setMessages(prev => [...prev, { id: nextIdRef.current++, text }]);
         };
 
         return () => {   // Le return contient un callback exécuté quand le composant est démonté
@@ -69,7 +69,8 @@ export default function InfosBox() {
 
     useEffect(() => {
         if (scrollContainerRef.current) {
-            scrollContainerRef.current.scrollTop = 0; // Force le scroll tout en haut
+            // scrollContainerRef.current.scrollTop = 0; // Force le scroll tout en haut
+            scrollContainerRef.current.scrollTo(0, scrollContainerRef.current.scrollHeight); // Force le scroll tout en bas
         }
     }, [messages]);   // S'exécute à chaque fois que 'messages' change
 

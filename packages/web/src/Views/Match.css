@@ -1,22 +1,108 @@
 .Match {
-    /* height: 100%; */
-    width: 100%; 
+    --animateFadeIn: Match-fadeIn 1s ease forwards;
 
-    /* padding-left: 50px; */
+    width: 100%;
+
     display: grid;
     grid-template-columns: 1fr 350px;
-    /* column-gap: 50px; */
 
-    
-    .boardContainer {
-        height: calc(var(--fullHeightWithHeader) - 100px);
+    .left {
+        overflow-y: auto;
+        overflow-x: hidden;
+        max-height: var(--fullHeightWithHeader);
+
+        &::-webkit-scrollbar {
+            width: 6px;
+            height: 90%;
+        }
+
+        &::-webkit-scrollbar-track {
+            background: #2a2a3a;
+        }
+
+        &::-webkit-scrollbar-thumb {
+            background: #5a5a6e;
+            border-radius: 3px;
+        }
+
+        .boardAndHandsContainer {
+            margin-bottom: 50px;
+            
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+
+            .boardContainer {
+                height: calc(var(--fullHeightWithHeader) - 140px);
+            }
+        }
+
+        .decidingFirstPlayer {
+            height: 100%;
+
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            justify-content: center;
+            align-items: center;
+
+            p {
+                font-size: 1.2em;
+
+                span {
+                    animation: Match-slowBlink 2s ease infinite;
+                }
+            }
+
+            & > .flexHori {
+                gap: 30px;
+
+                button {
+                    width: 100px;
+                    height: 50px;
+                }
+            }
+        }
     }
-    
-    & > .Board {
-        grid-column-start: 1;
-        padding: 12px 80px;
+
+
+
+
+    .right {
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        align-items: center;
     }
-    & > .InfosBox {
-        grid-column-start: 2;
+
+    .decidingFirstPlayer, .Board, .InfosBox {
+        animation: var(--animateFadeIn);
+    }
+
+
+}
+
+@keyframes Match-slowBlink {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes Match-fadeIn {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
     }
 }
