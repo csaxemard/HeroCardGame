@@ -103,6 +103,9 @@ button {
     user-select: none;
 }
 
+.textCentered {
+    text-align: center;
+}
 .centered {
     align-self: center;
 }

@@ -16,11 +16,12 @@ export interface BoardProps {
      *     - Chaque zone peut contenir un noeud JSX (une Card, un Deck, un Graveyard, juste un chiffre, ou autre chose)
      *     - Une zone peut aussi contenir null (auquel cas seule la zone sera affichée avec son nom et pas de contenu)
      */
-    boardZonesContent: BoardZonesContent
+    boardZonesContent: BoardZonesContent,
+    onClickDeck?: (player: PlayerType) => void
 }
 
 
-export default function Board({ readyForMatch = false, boardZonesContent }: BoardProps) {
+export default function Board({ readyForMatch = false, boardZonesContent, onClickDeck }: BoardProps) {
     // Définit les zones et leur emplacement
     const boardZonesConfig: BoardZonesConfig = {
         opponent: {
@@ -75,14 +76,14 @@ export default function Board({ readyForMatch = false, boardZonesContent }: Boar
                 if (zoneContent_tmp.numberOfCards <= 0) {
                     zoneContentJSX = null!
                 } else {
-                    zoneContentJSX = <Deck numberOfCards={zoneContent_tmp.numberOfCards} isExtraDeck={zoneName == "extraDeck"} />;
+                    zoneContentJSX = <Deck numberOfCards={zoneContent_tmp.numberOfCards} isExtraDeck={zoneName == "extraDeck"} ownerPlayer={playerType} />;
                 }
             } else if (zoneName == "extraDeck") {
                 const zoneContent_tmp = zoneContent as DeckZoneContent
                 if (zoneContent_tmp.numberOfCards <= 0) {
                     zoneContentJSX = null!
                 } else {
-                    zoneContentJSX = <Deck numberOfCards={zoneContent_tmp.numberOfCards} isExtraDeck />;
+                    zoneContentJSX = <Deck numberOfCards={zoneContent_tmp.numberOfCards} isExtraDeck ownerPlayer={playerType} />;
                 }
             } else if (["graveyard", "extraGraveyard"].includes(zoneName)) {
                 const zoneContent_tmp = zoneContent as GraveyardZoneContent

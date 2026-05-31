@@ -36,11 +36,6 @@ export const UiFunctions = {
 
 
 export default function Match() {
-    function showModal(cardId: number) {
-        set_modalCardFullscreen_cardId(cardId)
-        set_showModalCardFullscreen(true)
-    }
-
     function removeModal() {
         set_showModalCardFullscreen(false)
     }
@@ -141,8 +136,16 @@ export default function Match() {
         return { deck, extraDeck };
     }
 
-    function choseFirstPlayer(playerType: PlayerType) {
-
+    const actionsPassedToZones = {
+        showModal: (cardId: number) => {
+            set_modalCardFullscreen_cardId(cardId)
+            set_showModalCardFullscreen(true)
+        },
+        drawOnClickDeck: () => {
+            matchManager.drawCard("player", matchState.player.numberOfCardsToDraw)
+            if (!matchState.player.hasDrawnInitialCards) matchManager.confirmInitialDraw("player")
+            
+        },
     }
 
 
@@ -160,8 +163,8 @@ export default function Match() {
     const [showModalCardFullscreen, set_showModalCardFullscreen] = useState(false)
     const [modalCardFullscreen_cardId, set_modalCardFullscreen_cardId] = useState<number>()
     const [hideModalMatchEnd, set_hideModalMatchEnd] = useState(false)
-    // const [matchManager] = useState(new MatchManager(playerCustomDeck, opponentGenDecks)); // Sans debug
-    const [matchManager] = useState(new MatchManager(playerCustomDeck, opponentGenDecks, { skipDecideFirstPlayer: "player", opponentIsRandomBot: true }));
+    // const [matchManager] = useState(new MatchManager(playerCustomDeck, opponentGenDecks, {opponentIsRandomBot: true})); // Sans debug
+    const [matchManager] = useState(new MatchManager(playerCustomDeck, opponentGenDecks, { skipDecideFirstPlayer: "player", opponentIsRandomBot: true, autoInitialDraw: true }));
     const [matchState, setmatchState] = useState(() => matchManager.matchState);
     const boardZonesContent = {
         // Est mis à jour automatiquement avec les valeurs du matchState quand il est updaté avec la subscription car il en dépend
@@ -272,7 +275,7 @@ export default function Match() {
     return (
         <ClassicLayout hideFooter={true}>
             <main className="Match">
-                <MatchContext value={showModal}>
+                <MatchContext value={{ actionsPassedToZones, canDrawCard: matchState.player.numberOfCardsToDraw > 0 }}>
                     <div className="left" ref={leftRef}>
                         {currentLeftPanel == "decidingFirstPlayer" &&
                             <div className="decidingFirstPlayer">
@@ -338,16 +341,16 @@ export default function Match() {
 
 
                         <InfosBox />
-                        <button onClick={() => matchManager.drawCard("opponent")}>Draw opponent</button>
-                        <button onClick={() => matchManager.drawCard("player")}>Draw player</button>
-                        {/* {canGoToNextPhase && <button onClick={() => matchManager.goToNextPhase()}>Passer à la phase suivante</button>} */}
                         {matchState.winner &&
                             <button onClick={() => set_hideModalMatchEnd(!hideModalMatchEnd)}>Voir / cacher le plateau</button>
                         }
 
                         {/* Debug : */}
-                        <button onClick={() => matchManager.killPlayer("player", "emptyDeck")}>Kill Player</button>
-                        <button onClick={() => matchManager.killPlayer("opponent", "emptyDeck")}>Kill Opponent</button>
+                        {/* <button onClick={() => matchManager.drawCard("opponent", 1)}>Draw opponent</button>
+                        <button onClick={() => matchManager.drawCard("player", 1)}>Draw player</button> */}
+                        {/* {canGoToNextPhase && <button onClick={() => matchManager.goToNextPhase()}>Passer à la phase suivante</button>} */}
+                        {/* <button onClick={() => matchManager.killPlayer("player", "emptyDeck")}>Kill Player</button>
+                        <button onClick={() => matchManager.killPlayer("opponent", "emptyDeck")}>Kill Opponent</button> */}
                         {/* <button onClick={() => matchManager.addRandomCardToHand("opponent")}>Ajouter une carte à la main (adv)</button>
                         <button onClick={() => matchManager.addRandomCardToHand("player")}>Ajouter une carte à la main (vous)</button> */}
                     </div>

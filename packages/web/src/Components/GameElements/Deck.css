@@ -9,6 +9,10 @@
     user-select: none;
     /* background: linear-gradient(147deg, rgba(115, 186, 61, 1) 0%, rgba(23, 247, 255, 1) 38%, rgba(0, 115, 255, 1) 55%, rgba(8, 0, 255, 1) 69%, rgba(81, 0, 255, 1) 85%, rgba(250, 2, 246, 1) 100%); */
 
+    &.isClickable {
+        outline: 1px solid white;
+    }
+
     .numberOfCards {
         position: absolute;
         filter: drop-shadow(0 0px 10px white);

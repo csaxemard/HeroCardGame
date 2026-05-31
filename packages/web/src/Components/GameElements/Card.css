@@ -4,12 +4,19 @@
     width: fit-content;
     max-width: 100%;
     max-height: 100%;
-    cursor: pointer;
+    /* cursor: pointer; */
     user-select: none;
     aspect-ratio: 2142 / 2992;
 
     &.isGrabbable {
         cursor: grab;
+    }
+    &.isClickable {
+        cursor: pointer;
+        outline: solid 2px white;
+    }
+    &.canTriggerShowModal {
+        cursor: pointer;
     }
 
     &.isSelectable {

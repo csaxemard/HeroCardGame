@@ -4,6 +4,7 @@ import './InfosBox.css';
 interface Message {
     id: number;
     text: string;
+    isCentered?: boolean;
 }
 
 
@@ -12,15 +13,15 @@ interface Message {
 
 
 // Variable stockée en dehors du composant (global au module). Permet d'exposer une fonction que d'autres fichiers peuvent appeler
-let addInfo_internal: ((text: string) => void) | null = null;
+let addInfo_internal: ((text: string, isCentered?: boolean) => void) | null = null;
 
 // Fonction wrapper exportée, qui appelle addInfo_internal
 /**
  * Ajoute text à la InfosBox si elle existe
  */
-export const addInfo = (text: string) => {
+export const addInfo = (text: string, isCentered: boolean = false) => {
     if (addInfo_internal) {
-        addInfo_internal(text); // appelle la vraie fonction qui modifie le state
+        addInfo_internal(text, isCentered ?? false); // appelle la vraie fonction qui modifie le state
     } else {
         console.warn("InfosBox non montée, message ignoré :", text);
     }
@@ -50,7 +51,7 @@ export const addInfo = (text: string) => {
  * }
  * ```
  */
-export default function InfosBox() {
+export default function InfosBox({ isCentered = false }: { isCentered?: boolean }) {
     const [messages, setMessages] = useState<Message[]>([]);   // messages: tableau des messages affichés;   setMessages: modifie le state et déclenche le re-render
 
     const nextIdRef = useRef(0);   // Ref qui persiste entre les rendus sans déclencher de re-render.   nextIdRef.current donne l'ID unique pour le prochain message
@@ -58,8 +59,8 @@ export default function InfosBox() {
 
     useEffect(() => {
         // On remplit addInfo_internal qui est externe avec une fonction qui modifie le state
-        addInfo_internal = (text: string) => {
-            setMessages(prev => [...prev, { id: nextIdRef.current++, text }]);
+        addInfo_internal = (text: string, isCentered: boolean = false) => {
+            setMessages(prev => [...prev, { id: nextIdRef.current++, text, isCentered }]);
         };
 
         return () => {   // Le return contient un callback exécuté quand le composant est démonté
@@ -80,11 +81,11 @@ export default function InfosBox() {
             <div className="infos-messages" ref={scrollContainerRef}>
                 {/* ref={...} attache la variable DOM au conteneur pour le contrôler */}
                 {messages.map(msg => (
-                    <div key={msg.id} className="infos-message">
+                    <div key={msg.id} className={"infos-message" + (msg.isCentered ? " textCentered" : "")}>
                         {msg.text}
                     </div>
                 ))}
             </div>
-        </div>
+        </div >
     );
 }

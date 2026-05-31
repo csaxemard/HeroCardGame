@@ -33,7 +33,7 @@ export default function Card({ isGrabbable = false, isSelectable = false, hasRou
         const target = e.currentTarget as HTMLElement;
 
         const timer = setTimeout(() => {
-            showModal?.(cardId);
+            actionsPassedToZones.showModal?.(cardId);
         }, 1500);
 
         const cleanup = () => clearTimeout(timer);
@@ -44,15 +44,18 @@ export default function Card({ isGrabbable = false, isSelectable = false, hasRou
     function handleCardRClick(e: SyntheticEvent) {
         e.preventDefault()
         if (isFaceDown) return
-        showModal?.(cardId);
+        actionsPassedToZones.showModal?.(cardId);
     }
 
 
 
     // Context pour ModalCardFullscreen
     let canTriggerShowModal = false
-    const showModal = useContext(MatchContext)
-    if (showModal && !isFaceDown) canTriggerShowModal = true
+    const matchContext = useContext(MatchContext)
+    if (!matchContext) throw new Error("useContext must be used within an AppProvider");
+    const { actionsPassedToZones } = matchContext;
+
+    if (!isFaceDown) canTriggerShowModal = true
 
     // Récupère la carte associée à l'id
     const card = cards[cardId] ?? null
@@ -74,6 +77,8 @@ export default function Card({ isGrabbable = false, isSelectable = false, hasRou
                 "Card" +
                 (isGrabbable ? " isGrabbable" : "") +
                 (isSelectable ? " isSelectable" : "") +
+                (canTriggerShowModal ? " canTriggerShowModal" : "") +
+                // (isClickable ? " isclickable" : "") +
                 (hasRoundedCorners ? " hasRoundedCorners" : "") +
                 (isFaceDown ? " isFaceDown" : "") +
                 (hasBorder ? " hasBorder" : "")

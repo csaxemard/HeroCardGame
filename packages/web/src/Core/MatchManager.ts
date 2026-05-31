@@ -14,9 +14,12 @@ interface PlayerState {
     deck: number[],
     extraDeck: number[],
     hand: number[],
+    hasDrawnInitialCards: boolean;
     graveyard: number[],
     extraGraveyard: number[],
     banished: number[],
+    numberOfCardsToDraw: number,
+    normalInvocationsLeft: number,
     fightingZones: {
         hero: FightingZoneContent,
         swordL: FightingZoneContent,
@@ -46,6 +49,7 @@ interface ActionResult { success: boolean; error?: string; }
 interface MatchManagerDebugOptions {
     skipDecideFirstPlayer?: PlayerType,
     opponentIsRandomBot?: boolean,
+    autoInitialDraw?: boolean,
 }
 
 
@@ -74,10 +78,12 @@ export class MatchManager {
                 heroesLeft: 3,
                 deck: playerDecks.deck,
                 extraDeck: playerDecks.extraDeck,
+                normalInvocationsLeft: 0,
                 hand: [],
                 graveyard: [],
                 extraGraveyard: [],
                 banished: [],
+                numberOfCardsToDraw: 0,
                 fightingZones: {
                     hero: null,
                     swordL: null,
@@ -86,6 +92,7 @@ export class MatchManager {
                     archerR: null,
                     shield: null
                 },
+                hasDrawnInitialCards: false
             },
             opponent: {
                 heroesLeft: 3,
@@ -95,6 +102,8 @@ export class MatchManager {
                 graveyard: [],
                 extraGraveyard: [],
                 banished: [],
+                normalInvocationsLeft: 0,
+                numberOfCardsToDraw: 0,
                 fightingZones: {
                     hero: null,
                     swordL: null,
@@ -103,6 +112,7 @@ export class MatchManager {
                     archerR: null,
                     shield: null
                 },
+                hasDrawnInitialCards: false
             },
         }
     }
@@ -127,7 +137,8 @@ export class MatchManager {
 
     // Etapes concernant le début du match
     startMatch() {
-        addInfo(`--- Début du match ---\n${Object.keys(this.debugOptions).length != 0 ? "Debug options : " + Object.entries(this.debugOptions).filter(([_, val]) => val).map(([name]) => name).join(", ") : ""}`)
+        addInfo(`${Object.keys(this.debugOptions).length != 0 ? "Debug options : " + Object.entries(this.debugOptions).filter(([_, val]) => val).map(([name]) => name).join(", ") : ""}`)
+        addInfo(`--- Début du match ---`, true)
         this.decideFirstPlayer()
 
         // document.addEventListener("custom-onFirstPlayerChosen", this.startTurnsLoop)
@@ -146,11 +157,13 @@ export class MatchManager {
             return
         }
 
-        // Debug solo
         if (this.matchState.coinTossWinner == "opponent") {
-            setTimeout(() => {
-                this.setFirstPlayer(Math.random() < .5 ? "player" : "opponent")
-            }, 5000);
+            // Debug solo
+            if (this.debugOptions.opponentIsRandomBot) {
+                setTimeout(() => {
+                    this.setFirstPlayer(Math.random() < .5 ? "player" : "opponent")
+                }, 3000);
+            }
         }
     }
 
@@ -158,16 +171,36 @@ export class MatchManager {
         // Fonction flêchée car eventlistener enlève l'accès au this sinon
         UiFunctions.set_currentLeftPanel("board")
 
+
         // chaque joueur mélange son deck
-        for (const player of (["player", "opponent"] as PlayerType[])) this.shuffleDeck(player)
+        for (const player of (["player", "opponent"] as PlayerType[])) this.shuffleDeck(player);
+        // addInfo("Les decks ont été mélangés")
+
 
         // Chaque joueur pioche 4 cartes
+        for (const player of (["player", "opponent"] as PlayerType[])) this.matchState[player].numberOfCardsToDraw = 4
+        addInfo("Cliquez sur votre deck pour piocher vos 4 cartes de départ.")
         if (this.debugOptions.opponentIsRandomBot) {
-            for (let i = 0; i < 4; i++) this.drawCard("opponent")
+            this.drawCard("opponent", 4)
+            this.confirmInitialDraw("opponent")
+        }
+    }
+
+    confirmInitialDraw(player: PlayerType) {
+        if (this.matchState[player].numberOfCardsToDraw > 0) {
+            return { success: false, error: `(${player}) Cartes restantes à piocher` };
         }
 
-        this.startTurn()
+        this.matchState[player].hasDrawnInitialCards = true;
+
+        if (this.matchState.player.hasDrawnInitialCards && this.matchState.opponent.hasDrawnInitialCards) {
+            this.startTurn();
+        }
+
+        this.emit();
+        return { success: true };
     }
+
 
 
 
@@ -176,24 +209,28 @@ export class MatchManager {
         if (!this.matchState.turn) this.matchState.turn = 1
         else this.matchState.turn += 1
 
-        addInfo(`Tour ${this.matchState.turn}`)
+        addInfo(`Tour ${this.matchState.turn}`, true)
+
         if (![1, 2].includes(this.matchState.turn)) this.startDrawPhase()
-        else this.startStandbyPhase()
+        else {
+            addInfo("Rappel : Aucun joueur ne pioche durant son premier tour.");
+            this.startStandbyPhase()
+        }
     }
     private startDrawPhase() {
         this.matchState.phase = "draw"
         addInfo(`\tDraw Phase`)
 
 
-        const drawResult = this.drawCard(this.matchState.currentPlayer!)
+        const drawResult = this.drawCard(this.matchState.currentPlayer!, 1)
         if (drawResult.error == "Deck vide") {
             this.setWinner(this.matchState.currentPlayer === 'player' ? 'opponent' : 'player', "emptyDeck");
             return;
         }
-
-        this.startStandbyPhase()
+        // this.startStandbyPhase()
     }
     private startStandbyPhase() {
+        addInfo(`\tStandby Phase`)
         console.log("Method not implemented.");
     }
     private startFlipPhase() {
@@ -216,33 +253,41 @@ export class MatchManager {
 
 
     // Actions concernant les zones et les cartes
-    drawCard(player: PlayerType): ActionResult {
-        const pState = this.matchState[player];
-        const deck = pState.deck;
-
-        if (deck.length === 0) {
-            addInfo("Deck vide. Impossible de piocher")
-            return { success: false, error: 'Deck vide' };
-        }
-
-        const cardId = deck.shift()!;
-        pState.hand.push(cardId);
-        this.emit();
-
-        return { success: true };
-    }
-
     shuffleDeck(player: PlayerType): void {
         const pState = this.matchState[player];
         for (let i = pState.deck.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [pState.deck[i], pState.deck[j]] = [pState.deck[j], pState.deck[i]];
         }
+        addInfo(`(${player}) Le Deck a été mélangé.`)
         this.emit();
     }
 
+    drawCard(player: PlayerType, numberOfCardsToDraw: number): ActionResult {
+        const pState = this.matchState[player];
+        const deck = pState.deck;
 
-    // Actions concernant l'exécution du match (once only)
+        for (let i = 0; i < numberOfCardsToDraw; i++) {
+            if (deck.length === 0) {
+                addInfo("Deck vide. Impossible de piocher")
+                return { success: false, error: 'Deck vide' };
+            }
+
+            if (pState.numberOfCardsToDraw <= 0) {
+                addInfo(`(${player}) Vous n'etes pas autorisé à piocher`)
+                return { success: false, error: 'unauthorizedDraw' };
+            }
+
+            const cardId = deck.shift()!;
+            pState.hand.push(cardId);
+            this.matchState[player].numberOfCardsToDraw--;
+        }
+        this.emit();
+        return { success: true };
+    }
+
+
+    // Actions concernant l'exécution du match
     setFirstPlayer(firstPlayer: PlayerType) {
         this.matchState.currentPlayer = firstPlayer
         this.emit();
