@@ -28,10 +28,18 @@ export type ZonesNamesByPlayer = {
 export interface CardType { id: number, name: string, type?: "hero" | "monster", img: string }
 export interface CardInstance {
     cardId: number;
-    instanceId: string; // UUID
+    uuid: string; // UUID
 }
 
-export interface ZoneConfig { readableName: string; gridRowStart?: number; gridColStart?: number; isDisabled?: boolean }
+export interface ZoneConfig {
+    readableName: string;
+    gridRowStart?: number;
+    gridColStart?: number;
+    isDisabled?: boolean;
+    isDeck?: boolean;
+    isGraveyard?: boolean;
+    isExtra?: boolean;
+}
 
 /**
  * - Peut être une Card, ou autre chose, mais qui sera le node enfant de la zone

@@ -53,12 +53,14 @@ interface MatchManagerDebugOptions {
 }
 
 export type MatchEvent =
-    | { type: 'CARD_DRAWN'; player: PlayerType; cardId: number; instanceId: string }
-    | { type: 'CARD_MOVED'; cardId: number; from: string; to: string }
-    | { type: 'PHASE_CHANGED'; phase: string }
-    | { type: 'TURN_CHANGED'; player: PlayerType }
-    | { type: 'GAME_OVER'; winner: PlayerType };
-
+    | { type: 'startedDecidingFirstPlayer' }
+    | { type: 'startedTurnsLoop' }
+    | { type: 'turnChanged'; player: PlayerType }
+    | { type: 'phaseChanged'; phase: string }
+    | { type: 'matchWon'; winner: PlayerType; defeatCause: 'noHeroesLeft' | 'emptyDeck' }
+    | { type: 'cardDrawn'; player: PlayerType; cardId: number; uuid: string }
+    | { type: 'cardMoved'; cardId: number; from: string; to: string; uuid: string }
+    | { type: 'panelChange'; panel: 'decidingFirstPlayer' | 'board' };
 
 
 export class MatchManager {
@@ -85,8 +87,8 @@ export class MatchManager {
             currentPlayer: null,
             player: {
                 heroesLeft: 3,
-                deck: playerDecks.deck,
-                extraDeck: playerDecks.extraDeck,
+                deck: playerDecks.deck.map(cardId => ({ cardId, uuid: uuidv4() })),
+                extraDeck: playerDecks.extraDeck.map(cardId => ({ cardId, uuid: uuidv4() })),
                 normalInvocationsLeft: 0,
                 hand: [],
                 graveyard: [],
@@ -105,8 +107,8 @@ export class MatchManager {
             },
             opponent: {
                 heroesLeft: 3,
-                deck: opponentDecks.deck,
-                extraDeck: opponentDecks.extraDeck,
+                deck: opponentDecks.deck.map(cardId => ({ cardId, uuid: uuidv4() })),
+                extraDeck: opponentDecks.extraDeck.map(cardId => ({ cardId, uuid: uuidv4() })),
                 hand: [],
                 graveyard: [],
                 extraGraveyard: [],
@@ -124,11 +126,6 @@ export class MatchManager {
                 hasDrawnInitialCards: false
             },
         }
-    }
-
-    uninitializeMatchManager() {
-        // document.removeEventListener("custom-onFirstPlayerChosen", this.startTurnsLoop)
-        // document.removeEventListener("custom-onMatchWon", this.startTurnsLoop)
     }
 
     subscribe(callback: (matchState: MatchState) => void): () => void {
@@ -164,6 +161,7 @@ export class MatchManager {
         addInfo("Lancer de pièce...")
         this.matchState.coinTossWinner = Math.random() < .5 ? "player" : "opponent"
 
+        this.emitEvent({ type: 'startedDecidingFirstPlayer' });
 
         if (this.debugOptions.skipDecideFirstPlayer) {
             setTimeout(() => {
@@ -182,20 +180,18 @@ export class MatchManager {
         }
     }
 
-    private startTurnsLoop = () => {
-        // Fonction flêchée car eventlistener enlève l'accès au this sinon
+    private startTurnsLoop() {
+        this.emitEvent({ type: 'startedTurnsLoop' });
 
 
         // chaque joueur mélange son deck
         for (const player of (["player", "opponent"] as PlayerType[])) this.shuffleDeck(player);
-        // addInfo("Les decks ont été mélangés")
-
 
         // Chaque joueur pioche 4 cartes
         for (const player of (["player", "opponent"] as PlayerType[])) this.matchState[player].numberOfCardsToDraw = 4
         addInfo("Cliquez sur votre deck pour piocher vos 4 cartes de départ.")
         if (this.debugOptions.opponentIsRandomBot) {
-            this.drawCard("opponent", 4)
+            this.drawCards("opponent", 4)
             this.confirmInitialDraw("opponent")
         }
     }
@@ -236,7 +232,7 @@ export class MatchManager {
         addInfo(`\tDraw Phase`)
 
 
-        const drawResult = this.drawCard(this.matchState.currentPlayer!, 1)
+        const drawResult = this.drawCards(this.matchState.currentPlayer!, 1)
         if (drawResult.error == "Deck vide") {
             this.setWinner(this.matchState.currentPlayer === 'player' ? 'opponent' : 'player', "emptyDeck");
             return;
@@ -266,6 +262,24 @@ export class MatchManager {
 
 
 
+    // Actions concernant l'exécution du match
+    setFirstPlayer(firstPlayer: PlayerType) {
+        this.matchState.currentPlayer = firstPlayer
+        this.emit();
+
+        addInfo(this.matchState.currentPlayer == "player" ? "Vous commencerez la partie." : "Le joueur adverse commencera la partie.")
+        this.startTurnsLoop()
+    }
+
+    setWinner(winner: PlayerType, defeatCause: "noHeroesLeft" | "emptyDeck") {
+        this.matchState.winner = winner
+        this.matchState.defeatCause = defeatCause
+        addInfo(this.matchState.winner == "player" ? "Vous remportez la partie" : "L'adversaire remporte la partie")
+        this.emit()
+    }
+
+
+
     // Actions concernant les zones et les cartes
     shuffleDeck(player: PlayerType): void {
         const pState = this.matchState[player];
@@ -277,50 +291,35 @@ export class MatchManager {
         this.emit();
     }
 
-    drawCard(player: PlayerType, numberOfCardsToDraw: number): ActionResult {
+    drawCards(player: PlayerType, numberOfCardsToDraw: number): ActionResult {
         const pState = this.matchState[player];
-        const deck = pState.deck;
+        const actualDrawCount = Math.min(numberOfCardsToDraw, pState.numberOfCardsToDraw);
 
-        for (let i = 0; i < numberOfCardsToDraw; i++) {
-            if (deck.length === 0) {
-                addInfo("Deck vide. Impossible de piocher")
+        for (let i = 0; i < actualDrawCount; i++) {
+            if (pState.deck.length === 0) {
+                addInfo("Deck vide");
                 return { success: false, error: 'Deck vide' };
             }
 
-            if (pState.numberOfCardsToDraw <= 0) {
-                addInfo(`(${player}) Vous n'etes pas autorisé à piocher`)
-                return { success: false, error: 'unauthorizedDraw' };
+            const cardInstanceFromDeck = pState.deck.shift()!;
+            pState.hand.push(cardInstanceFromDeck);
+
+            if (!pState.hasDrawnInitialCards) {
+                pState.numberOfCardsToDraw--;
             }
 
-            const cardId = deck.shift()!;
-            const instanceId = uuidv4();
-            const card = { cardId, instanceId };
-            pState.hand.push(card);
-            this.emitEvent({ type: 'CARD_DRAWN', player, cardId, instanceId });
+            this.emitEvent({
+                type: "cardDrawn",
+                player,
+                cardId: cardInstanceFromDeck.cardId,
+                uuid: cardInstanceFromDeck.uuid
+            });
         }
+
         this.emit();
         return { success: true };
     }
 
-
-    // Actions concernant l'exécution du match
-    setFirstPlayer(firstPlayer: PlayerType) {
-        this.matchState.currentPlayer = firstPlayer
-        this.emit();
-
-        addInfo(this.matchState.currentPlayer == "player" ? "Vous commencerez la partie." : "Le joueur adverse commencera la partie.")
-        this.startTurnsLoop()
-    }
-    setWinner(winner: PlayerType, defeatCause: "noHeroesLeft" | "emptyDeck") {
-        this.matchState.winner = winner
-        this.matchState.defeatCause = defeatCause
-        addInfo(this.matchState.winner == "player" ? "Vous remportez la partie" : "L'adversaire remporte la partie")
-        this.emit()
-    }
-
-
-
-    // Fonctions concernant l'esthétique
     summonCard(card: CardInstance, originZone: ZonesNames, targetZone: ZonesNames): ActionResult {
     }
 

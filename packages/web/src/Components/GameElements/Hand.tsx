@@ -1,15 +1,20 @@
-import { useRef, useEffect, useState } from "react";
+import { useRef, useLayoutEffect } from "react";
 import Card from "./Card";
 import "./Hand.css";
+import type { CardInstance } from "@/types";
 
 interface HandProps {
-    cardsIds: number[];
-    isOpponentHand?: boolean;
-    parentLeftRef?: React.RefObject<HTMLDivElement | null>,
-    lastDrawnCard
+    cardInstances: CardInstance[];
+    /** - Default: false */ isOpponentHand?: boolean;
+    /** - Définit si les cartes se soulèvent on card hover. (Default: false)  
+     * Utilisé pour l'UI de mes Matchs */ canTranslateOnHover?: boolean
+     onCardContextMenu: (cardId: number) => void
 }
 
-export default function Hand({ cardsIds, isOpponentHand = false, parentLeftRef, lastDrawnCard }: HandProps) {
+
+
+export default function Hand({ cardInstances, isOpponentHand = false, canTranslateOnHover, onCardContextMenu }: HandProps) {
+
     function adjustOverlap(container: HTMLElement) {
         const cards = Array.from(container.children) as HTMLElement[];
         if (cards.length < 2) return;
@@ -35,15 +40,10 @@ export default function Hand({ cardsIds, isOpponentHand = false, parentLeftRef, 
 
 
     const cardsContainerRef = useRef<HTMLDivElement>(null);
-    const [canTranslateOnHover, setCanTranslateOnHover] = useState(false);
 
-    const lastDrawn = matchManager.lastDrawnCard;
-    const isAnimating = lastDrawn && lastDrawn.player === player && Date.now() - lastDrawn.timestamp < 300;
-
-
-
-    // Ajuste l'overlap quand nouvelle carte ou resize window
-    useEffect(() => {
+    // Ajuste l'overlap quand nouvelle carte ou window resized
+    useLayoutEffect(() => {
+        // Expl : useLayoutEffect s'exécute avant que le navigateur ne peint à l'écran. useEffect s'exécute après la peinture
         const container = cardsContainerRef.current;
         if (!container) return;
 
@@ -53,31 +53,16 @@ export default function Hand({ cardsIds, isOpponentHand = false, parentLeftRef, 
         resizeObserver.observe(container);
 
         return () => resizeObserver.disconnect();
-    });
-
-    // enable CanTranslateOnHover if not scrolled
-    useEffect(() => {
-        const container = parentLeftRef?.current;
-        if (!container || isOpponentHand) return;
-
-        const handleScroll = () => {
-            setCanTranslateOnHover(container.scrollTop == 0);
-        };
-
-        handleScroll(); // valeur initiale
-        container.addEventListener("scroll", handleScroll);
-
-        return () => container.removeEventListener("scroll", handleScroll);
-    });
+    }, [cardInstances.length]);
 
 
 
     return (
         <div className={"Hand" + (isOpponentHand ? " opponent" : " player")}>
             <div className="cardsContainer" ref={cardsContainerRef}>
-                {cardsIds.map((cardId, index) => (
-                    <div key={String(cardId) + index} className={"cardContainer" + (canTranslateOnHover ? " canTranslateOnHover" : "")} style={{ zIndex: index }}>
-                        <Card cardId={cardId} isFaceDown={isOpponentHand} />
+                {cardInstances.map((instance, index) => (
+                    <div key={instance.uuid} className={"cardContainer" + (canTranslateOnHover ? " canTranslateOnHover" : "")} style={{ zIndex: index }}>
+                        <Card cardId={isOpponentHand ? 0 : instance.cardId} cardInstanceUuid={instance.uuid} isFaceDown={isOpponentHand} onContextMenu={onCardContextMenu}/>
                     </div>
                 ))}
             </div>
