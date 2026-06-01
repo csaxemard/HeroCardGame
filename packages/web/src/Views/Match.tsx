@@ -406,20 +406,25 @@ export default function Match() {
                         </svg>
                     </button>
 
-
                     <InfosBox />
-                    {matchState.winner &&
-                        <button onClick={() => set_hideModalMatchEnd(!hideModalMatchEnd)}>Voir / cacher le plateau</button>
+
+                    { matchState.canChangePhase && 
+                    <button onClick={() => matchManager.changePhase()}>
+                        Passer à la {
+                            matchManager.getPhaseHumanReadableName(matchState.phase, true)
+                        }
+                        </button>
                     }
+
+                    {matchState.winner && <button onClick={() => set_hideModalMatchEnd(!hideModalMatchEnd)}>Voir / cacher le plateau</button>}
 
                     {/* Debug : */}
                     <button onClick={() => matchManager.drawCards("opponent", 1)}>Draw opponent</button>
-                        <button onClick={() => matchManager.drawCards("player", 1)}>Draw player</button>
-                    {/* {canGoToNextPhase && <button onClick={() => matchManager.goToNextPhase()}>Passer à la phase suivante</button>} */}
-                    {/* <button onClick={() => matchManager.killPlayer("player", "emptyDeck")}>Kill Player</button>
-                        <button onClick={() => matchManager.killPlayer("opponent", "emptyDeck")}>Kill Opponent</button> */}
-                    {/* <button onClick={() => matchManager.addRandomCardToHand("opponent")}>Ajouter une carte à la main (adv)</button>
-                        <button onClick={() => matchManager.addRandomCardToHand("player")}>Ajouter une carte à la main (vous)</button> */}
+                    <button onClick={() => matchManager.drawCards("player", 1)}>Draw player</button>
+                    <button onClick={() => matchManager.killPlayer("player", "emptyDeck")}>Kill Player</button>
+                        <button onClick={() => matchManager.killPlayer("opponent", "emptyDeck")}>Kill Opponent</button>
+                    <button onClick={() => matchManager.addRandomCardToHand("opponent")}>Ajouter une carte à la main (adv)</button>
+                        <button onClick={() => matchManager.addRandomCardToHand("player")}>Ajouter une carte à la main (vous)</button>
                 </div>
 
                 {showModalCardFullscreen && <ModalCardFullscreen card={cards[modalCardFullscreen_cardId!]} onModalClosed={removeModal} />}

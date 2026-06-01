@@ -101,4 +101,4 @@ const themes = {
     btnBgActive: ["#bdd6ff", "#9b9b9b"],
 }
 
-const currentThemeDefaultValue: Theme = "light"
+const currentThemeDefaultValue: Theme = "dark"

@@ -78,4 +78,5 @@ export type BoardZonesContent = Record<PlayerType, HalfBoardZonesContent>;
 
 // --- Conernant les matchs ---
 
+export type PhaseType = | "draw" | "standby" | "flip" | "attack" | "shift" | "end"
 

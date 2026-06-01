@@ -65,7 +65,7 @@ Date de départ : 14 décembre 2025
 
 ### Quick start
 - Cloner repo
-- Récupérer `z-resources/heroCards_20260424.7z` ailleurs, et le dézipper dans `/packages/web/public/cards`
+- Récupérer `z-resources/heroCards_20260424.7z`, `heroCards-w215`, `heroCards-w450`, `heroCards-w600`, `heroCards-w1000` ailleurs, et le dézipper dans `/packages/web/public/cards`
 - Exécuter `npm i`, puis `npm audit fix`
 
 
@@ -80,6 +80,16 @@ Date de départ : 14 décembre 2025
         npm run build:mobile   ->   expo build
         npm run build:shared   ->   tsc
 ```
+
+### Instructions de déploiement
+- Déploiement vercel front only
+    - [Web] Build
+    - copier web/dist dans vercelDist
+    - cd vercelDist
+    - git commit
+    - git push
+    - (le déploiement vercel est mis à jour automatiquement)
+
 </details>
 
 

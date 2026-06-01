@@ -1,4 +1,4 @@
-import type { CardInstance, PlayerType } from "@/types";
+import type { CardInstance, PhaseType, PlayerType } from "@/types";
 import { addInfo } from "@/Components/MatchUI/InfosBox";
 import { getRandomCardId } from "@/cards";
 import { v4 as uuidv4 } from 'uuid';
@@ -34,12 +34,16 @@ interface PlayerState {
  * - Contains the state of the match
  */
 interface MatchState {
+    // Etapes du match
     turn: number | null,
-    phase: "draw" | "standby" | "flip" | "attack" | "shift" | "end" | null,
+    phase: PhaseType | null,
+    // Trucs définis qu'une fois
     coinTossWinner: PlayerType | null,
     winner: PlayerType | null,
     defeatCause: "noHeroesLeft" | "emptyDeck" | null
     firstPlayer: PlayerType | null,
+    // Le reste
+    canChangePhase: boolean,
     currentPlayer: PlayerType | null,
     player: PlayerState
     opponent: PlayerState,
@@ -56,7 +60,7 @@ export type MatchEvent =
     | { type: 'startedDecidingFirstPlayer' }
     | { type: 'startedTurnsLoop' }
     | { type: 'turnChanged'; player: PlayerType }
-    | { type: 'phaseChanged'; phase: string }
+    | { type: 'phaseChanged'; phase: PhaseType }
     | { type: 'matchWon'; winner: PlayerType; defeatCause: 'noHeroesLeft' | 'emptyDeck' }
     | { type: 'cardDrawn'; player: PlayerType; uuid: string }
     | { type: 'cardMoved'; cardId: number; from: string; to: string; uuid: string }
@@ -80,6 +84,7 @@ export class MatchManager {
         return {
             turn: null,
             phase: null,
+            canChangePhase: false,
             coinTossWinner: null,
             winner: null,
             defeatCause: null,
@@ -229,36 +234,45 @@ export class MatchManager {
     }
     private startDrawPhase() {
         this.matchState.phase = "draw"
-        addInfo(`\tDraw Phase`)
+        this.emitEvent({ type: "phaseChanged", phase: this.matchState.phase })
+        addInfo(`\t${this.getPhaseHumanReadableName(this.matchState.phase)}`)
 
+        for (let i = 0; i < 40; i++) {
+            this.emit()
+        }
 
         const drawResult = this.drawCards(this.matchState.currentPlayer!, 1)
         if (drawResult.error == "Deck vide") {
             this.setWinner(this.matchState.currentPlayer === 'player' ? 'opponent' : 'player', "emptyDeck");
             return;
         }
-        // this.startStandbyPhase()
     }
     private startStandbyPhase() {
-        addInfo(`\tStandby Phase`)
+        this.matchState.phase = "standby"
+        this.emitEvent({ type: "phaseChanged", phase: this.matchState.phase })
+        addInfo(`\t${this.getPhaseHumanReadableName(this.matchState.phase)}`)
+        this.matchState.canChangePhase = true
+        this.emit()
+    }
+    private startFlipPhase() {
+        this.matchState.phase = "flip"
+        this.emitEvent({ type: "phaseChanged", phase: this.matchState.phase })
+        addInfo(`\t${this.getPhaseHumanReadableName(this.matchState.phase)}`)
+        this.matchState.canChangePhase = true
+    }
+    private startAttackPhase() {
         console.log("Method not implemented.");
     }
-    // private startFlipPhase() {
-    //     console.log("Method not implemented.");
-    // }
-    // private startAttackPhase() {
-    //     console.log("Method not implemented.");
-    // }
-    // private startShiftPhase() {
-    //     console.log("Method not implemented.");
-    // }
-    // private startEndPhase() {
-    //     console.log("Method not implemented.");
-    //     prompt("end phase")
-    //     if (!this.matchState.winner) {
-    //         this.startTurn
-    //     }
-    // }
+    private startShiftPhase() {
+        console.log("Method not implemented.");
+    }
+    private startEndPhase() {
+        console.log("Method not implemented.");
+        prompt("end phase")
+        if (!this.matchState.winner) {
+            this.startTurn
+        }
+    }
 
 
 
@@ -276,6 +290,37 @@ export class MatchManager {
         this.matchState.defeatCause = defeatCause
         addInfo(this.matchState.winner == "player" ? "Vous remportez la partie" : "L'adversaire remporte la partie")
         this.emit()
+    }
+
+    changePhase() {
+        switch (this.matchState.phase) {
+            case "draw":
+                this.startStandbyPhase()
+                this.matchState.canChangePhase = false
+                break;
+            case "standby":
+                this.startFlipPhase()
+                this.matchState.canChangePhase = false
+                break;
+            case "flip":
+                this.startAttackPhase()
+                this.matchState.canChangePhase = false
+                break;
+            case "attack":
+                this.startShiftPhase()
+                this.matchState.canChangePhase = false
+                break;
+            case "shift":
+                this.startEndPhase()
+                this.matchState.canChangePhase = false
+                break;
+            case "end":
+                this.startTurn()
+                this.matchState.canChangePhase = false
+                break;
+            default:
+                break;
+        }
     }
 
 
@@ -318,6 +363,28 @@ export class MatchManager {
     // summonCard(card: CardInstance, originZone: ZonesNames, targetZone: ZonesNames): ActionResult {
     // }
 
+
+
+    // Autre (fourre-tout)
+    getPhaseHumanReadableName(phase: PhaseType | null, lowerCase: boolean = false): string {
+        const p = lowerCase ? "P" : "p"
+        switch (phase) {
+            case "draw":
+                return `${p}hase de pioche`
+            case "standby":
+                return `${p}hase d'attente`
+            case "flip":
+                return `${p}hase de flip`
+            case "attack":
+                return `${p}hase d'attaque`
+            case "shift":
+                return `${p}hase de déplacement`
+            case "end":
+                return `${p}hase de fin`
+            default:
+                return ""
+        }
+    }
 
 
     // Fonctions debug

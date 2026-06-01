@@ -19,7 +19,7 @@
     &.isClickable {
         cursor: pointer;
     }
-    
+
     &.isSelectable {
         outline: 2px solid white;
         outline-offset: 2px;
