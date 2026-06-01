@@ -1,6 +1,4 @@
 .Match {
-    --animateFadeIn: Match-fadeIn 1s ease forwards;
-
     width: 100%;
 
     display: grid;
@@ -95,7 +93,7 @@
                 font-size: 1.2em;
 
                 span {
-                    animation: Match-slowBlink 2s ease infinite;
+                    animation: var(--animateSlowBlink)
                 }
             }
 
@@ -128,26 +126,5 @@
 
 }
 
-@keyframes Match-slowBlink {
-    0% {
-        opacity: 1;
-    }
 
-    50% {
-        opacity: 0;
-    }
 
-    100% {
-        opacity: 1;
-    }
-}
-
-@keyframes Match-fadeIn {
-    0% {
-        opacity: 0;
-    }
-
-    100% {
-        opacity: 1;
-    }
-}

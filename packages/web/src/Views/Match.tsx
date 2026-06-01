@@ -5,7 +5,7 @@ import ClassicLayout from "@/Layouts/ClassicLayout";
 import { cardIdsByRole, cards } from "@/cards";
 import ModalCardFullscreen from "@/Components/GameElements/ModalCardFullscreen";
 import type { BoardZonesConfig, PlayerType, ZoneConfig, ZonesNames } from "@/types";
-import { MatchManager, type MatchEvent } from "@/Core/MatchManager";
+import { MatchManager } from "@/Core/MatchManager";
 import InfosBox from "@/Components/MatchUI/InfosBox";
 import Card from "@/Components/GameElements/Card";
 import Hand from "@/Components/GameElements/Hand";
@@ -110,9 +110,9 @@ export default function Match() {
 
         if (isDeck) {
             const instances = zoneName === 'extraDeck' ? playerState.extraDeck : playerState.deck;
-            const playerCanDraw = playerType === 'player' && !isExtra;
+            const canDraw = playerType === 'player' && !isExtra && playerState.numberOfCardsToDraw > 0;
             if (instances.length > 0) {
-                content = <Deck cardInstancesUuids={instances.map(c => c.uuid)} isExtraDeck={isExtra} onClick={playerCanDraw ? () => drawOnClickDeck() : undefined} />;
+                content = <Deck cardInstancesUuids={instances.map(c => c.uuid)} isExtraDeck={isExtra} onClick={canDraw ? () => drawOnClickDeck() : undefined} />;
             }
         } else if (isGraveyard) {
             const instances = zoneName === 'extraGraveyard' ? playerState.extraGraveyard : playerState.graveyard;
@@ -140,7 +140,7 @@ export default function Match() {
 
 
 
-    const playerGenDecks = generateDecks();
+    // const playerGenDecks = generateDecks();
     const opponentGenDecks = generateDecks();
     const playerCustomDeck = {
         deck: [3, 3, 11, 11, 11, 31, 31, 31, 38, 38, 38, 3, 3, 11, 11, 11, 31, 31, 31, 38, 38, 38, 3, 3, 11, 11, 11, 31, 31, 31, 38, 38, 38],

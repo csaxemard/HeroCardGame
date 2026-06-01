@@ -11,6 +11,7 @@ interface GraveyardProps {
 
 
 export default function Graveyard({ cardInstances, isExtraGraveyard = false, isBanishedZone = false }: GraveyardProps) {
+    isBanishedZone   // pour enlever l'erreur nused declaration de ts qui empeche le build
     const visibleCards = cardInstances.slice(0, 8);
     const count = Math.min(visibleCards.length, 5);
     const offsetX = isExtraGraveyard ? -10 : 10;

@@ -51,7 +51,7 @@ export const addInfo = (text: string, isCentered: boolean = false) => {
  * }
  * ```
  */
-export default function InfosBox({ isCentered = false }: { isCentered?: boolean }) {
+export default function InfosBox() {
     const [messages, setMessages] = useState<Message[]>([]);   // messages: tableau des messages affichés;   setMessages: modifie le state et déclenche le re-render
 
     const nextIdRef = useRef(0);   // Ref qui persiste entre les rendus sans déclencher de re-render.   nextIdRef.current donne l'ID unique pour le prochain message

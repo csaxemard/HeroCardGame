@@ -5,9 +5,10 @@
     --transitionDefaults: background-color .5s, color .5s;
     --linkNavFontSize: 19px;
     --headerHeight: 70px;
-    --fullHeightWithHeader: calc(100vh - 70px)
-
-    /* Les variables de thèmes sont stockées dans le appState et générées automatiquement */
+    --fullHeightWithHeader: calc(100vh - 70px);
+    --animateFadeIn: fadeIn 1s ease forwards;
+    --animateSlowBlink: animation: slowBlink 2s ease infinite;
+        /* Les variables de thèmes sont stockées dans le appState et générées automatiquement */
 }
 
 
@@ -106,6 +107,7 @@ button {
 .textCentered {
     text-align: center;
 }
+
 .centered {
     align-self: center;
 }
@@ -118,25 +120,31 @@ button {
     opacity: 0;
     pointer-events: none;
 }
+
 .flexHori {
     display: flex;
     flex-direction: row;
 }
+
 .error {
     color: #ffa5a5;
 }
+
 /* Flex items */
 .flexIAlignStart {
     align-self: flex-start;
 }
+
 .flexIAlignEnd {
     align-self: flex-end;
 }
+
 /* Concernant main : */
 .fullHeight {
     height: var(--fullHeightWithHeader);
     max-height: var(--fullHeightWithHeader);
 }
+
 .fullWidth {
     width: 100vw;
     max-width: 100vw;
@@ -161,5 +169,31 @@ button {
 
     & > main {
         flex: 1;
+    }
+}
+
+
+
+@keyframes slowBlink {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: .2;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
     }
 }

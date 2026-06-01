@@ -1,4 +1,4 @@
-import type { CardInstance, PlayerType, ZonesNames } from "@/types";
+import type { CardInstance, PlayerType } from "@/types";
 import { addInfo } from "@/Components/MatchUI/InfosBox";
 import { getRandomCardId } from "@/cards";
 import { v4 as uuidv4 } from 'uuid';
@@ -58,7 +58,7 @@ export type MatchEvent =
     | { type: 'turnChanged'; player: PlayerType }
     | { type: 'phaseChanged'; phase: string }
     | { type: 'matchWon'; winner: PlayerType; defeatCause: 'noHeroesLeft' | 'emptyDeck' }
-    | { type: 'cardDrawn'; player: PlayerType; cardId: number; uuid: string }
+    | { type: 'cardDrawn'; player: PlayerType; uuid: string }
     | { type: 'cardMoved'; cardId: number; from: string; to: string; uuid: string }
     | { type: 'panelChange'; panel: 'decidingFirstPlayer' | 'board' };
 
@@ -243,22 +243,22 @@ export class MatchManager {
         addInfo(`\tStandby Phase`)
         console.log("Method not implemented.");
     }
-    private startFlipPhase() {
-        console.log("Method not implemented.");
-    }
-    private startAttackPhase() {
-        console.log("Method not implemented.");
-    }
-    private startShiftPhase() {
-        console.log("Method not implemented.");
-    }
-    private startEndPhase() {
-        console.log("Method not implemented.");
-        prompt("end phase")
-        if (!this.matchState.winner) {
-            this.startTurn
-        }
-    }
+    // private startFlipPhase() {
+    //     console.log("Method not implemented.");
+    // }
+    // private startAttackPhase() {
+    //     console.log("Method not implemented.");
+    // }
+    // private startShiftPhase() {
+    //     console.log("Method not implemented.");
+    // }
+    // private startEndPhase() {
+    //     console.log("Method not implemented.");
+    //     prompt("end phase")
+    //     if (!this.matchState.winner) {
+    //         this.startTurn
+    //     }
+    // }
 
 
 
@@ -297,7 +297,7 @@ export class MatchManager {
 
         for (let i = 0; i < actualDrawCount; i++) {
             if (pState.deck.length === 0) {
-                addInfo("Deck vide");
+                addInfo(`(${player}) Deck vide, impossible de piocher`)
                 return { success: false, error: 'Deck vide' };
             }
 
@@ -308,26 +308,21 @@ export class MatchManager {
                 pState.numberOfCardsToDraw--;
             }
 
-            this.emitEvent({
-                type: "cardDrawn",
-                player,
-                cardId: cardInstanceFromDeck.cardId,
-                uuid: cardInstanceFromDeck.uuid
-            });
+            this.emitEvent({ type: "cardDrawn", player, uuid: cardInstanceFromDeck.uuid });
         }
 
         this.emit();
         return { success: true };
     }
 
-    summonCard(card: CardInstance, originZone: ZonesNames, targetZone: ZonesNames): ActionResult {
-    }
+    // summonCard(card: CardInstance, originZone: ZonesNames, targetZone: ZonesNames): ActionResult {
+    // }
 
 
 
     // Fonctions debug
     addRandomCardToHand(playerToGiveCard: PlayerType) {
-        this.matchState[playerToGiveCard].hand.push(getRandomCardId())
+        this.matchState[playerToGiveCard].hand.push({ cardId: getRandomCardId(), uuid: uuidv4() })
         this.emit();
     }
     killPlayer(player: PlayerType, defeatCause: "noHeroesLeft" | "emptyDeck") {

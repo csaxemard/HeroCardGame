@@ -4,7 +4,7 @@ import { motion } from "motion/react";
 
 interface CardProps {
     /** - Si isFaceDown, mettre 0 comme cardId */ cardId: number,
-    /** - Id unique qui identifie la carte tout le long de la partie. Utilisé par Motion */ cardInstanceUuid: string,
+    /** - Id unique qui identifie la carte tout le long de la partie. Utilisé par Motion */ cardInstanceUuid?: string,
     isExtra?: boolean
     /** - Si isFaceDown, mettre 0 comme cardId */ isFaceDown?: boolean,
     // Options :

@@ -17,43 +17,43 @@ export default function Header() {
         }
     }
 
-    function openDrawer(event: React.SyntheticEvent) {
-        // Hide all navDrawers
-        document.querySelectorAll(`.navDrawer`).forEach(drawer => {
-            const navDrawerContainer: HTMLElement | null = (event.target as HTMLElement).closest(".navDrawer-container");
-            delete navDrawerContainer?.dataset.isHovered
-            drawer.classList.add("hidden")
-        });
+    // function openDrawer(event: React.SyntheticEvent) {
+    //     // Hide all navDrawers
+    //     document.querySelectorAll(`.navDrawer`).forEach(drawer => {
+    //         const navDrawerContainer: HTMLElement | null = (event.target as HTMLElement).closest(".navDrawer-container");
+    //         delete navDrawerContainer?.dataset.isHovered
+    //         drawer.classList.add("hidden")
+    //     });
 
-        const navDrawerContainer: HTMLElement | null = (event.target as HTMLElement).closest(".navDrawer-container");
-        const navDrawer = (event.target as HTMLElement).closest(".navDrawer-container")?.querySelector(".navDrawer")
+    //     const navDrawerContainer: HTMLElement | null = (event.target as HTMLElement).closest(".navDrawer-container");
+    //     const navDrawer = (event.target as HTMLElement).closest(".navDrawer-container")?.querySelector(".navDrawer")
 
-        if (navDrawerContainer) {
-            navDrawerContainer.dataset.isHovered = "true"
-        }
+    //     if (navDrawerContainer) {
+    //         navDrawerContainer.dataset.isHovered = "true"
+    //     }
 
-        navDrawer?.classList.remove("hidden")
-    }
+    //     navDrawer?.classList.remove("hidden")
+    // }
 
-    function closeDrawer(event: React.SyntheticEvent) {
-        const navDrawerContainer: HTMLElement | null = (event.target as HTMLElement).closest(".navDrawer-container");
-        const navDrawer = (event.target as HTMLElement).closest(".navDrawer-container")?.querySelector(".navDrawer")
+    // function closeDrawer(event: React.SyntheticEvent) {
+    //     const navDrawerContainer: HTMLElement | null = (event.target as HTMLElement).closest(".navDrawer-container");
+    //     const navDrawer = (event.target as HTMLElement).closest(".navDrawer-container")?.querySelector(".navDrawer")
 
-        delete navDrawerContainer?.dataset.isHovered
+    //     delete navDrawerContainer?.dataset.isHovered
 
-        setTimeout(() => {
-            if (navDrawerContainer?.dataset.isHovered !== "true") {
-                navDrawer?.classList.add("hidden")
-            }
-        }, 200);
-    }
+    //     setTimeout(() => {
+    //         if (navDrawerContainer?.dataset.isHovered !== "true") {
+    //             navDrawer?.classList.add("hidden")
+    //         }
+    //     }, 200);
+    // }
 
 
 
     // Context
     const appContext = useContext(AppContext)
     if (!appContext) throw new Error("useContext must be used within an AppProvider");
-    const { appState, setAppState, utils } = appContext;
+    const { appState, setAppState } = appContext;
 
     // useEffect for switchTheme
     useEffect(() => {
