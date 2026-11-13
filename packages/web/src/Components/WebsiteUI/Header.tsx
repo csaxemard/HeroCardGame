@@ -102,6 +102,7 @@ export default function Header() {
                         <Link to={"/debug/card/1"} className="navLink navDrawerItem">Card viewer</Link>
                     </ul>
                 </div> */}
+                <Link to={"/debug"} className="navLink navDrawerItem" onClick={closeMobileMenu}>Debug</Link>
                 <Link to={"/catalogue/1"} className="navLink navDrawerItem" onClick={closeMobileMenu}>Catalogue</Link>
                 <Link to={"/decks"} className="navLink navDrawerItem" onClick={closeMobileMenu}>Mes decks</Link>
                 <Link to={"/match"} className="navLink navDrawerItem" onClick={closeMobileMenu}>Match</Link>

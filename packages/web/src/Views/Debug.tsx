@@ -5,8 +5,8 @@ import { prototypeCards } from "@/PrototypeMatchStuff/AllPrototypeCards";
 export default function Debug() {
     return (
         <ClassicLayout hideFooter={true}>
-            <main className="Debug centered fullHeight" style={{width : "350px", height: "350px"}}>
-                <PrototypeCard card={prototypeCards[112]}></PrototypeCard>
+            <main className="Debug centered fullHeight" style={{ width: "350px", height: "350px" }}>
+                <PrototypeCard card={prototypeCards[45]}></PrototypeCard>
             </main>
         </ClassicLayout>
     )

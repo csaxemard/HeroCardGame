@@ -1,5 +1,6 @@
 # Hero Card Game
-v0.3.0 (Back from hiatus)
+v0.3.1
+
 
 ## Concept
 Ce projet adapte au format numérique le jeu de cartes [Hero Card Game](https://www.instagram.com/hero_cardgame/), créé par Gricha Saxemard.  
@@ -7,16 +8,19 @@ Plateformes cibles : Web et mobile
 - Site web provisoire : [hero-card-game-nu.vercel.app](https://hero-card-game-nu.vercel.app/)
 
 
-<br><br>
+<br>
 
 
-## Backlog
-### Current
-- Je viens de reprendre le projet, après une pause depuis la présentation pour mon projet de fin de licence.
-- Mon but actuel c'est de refaire une vraie partie simple. Donc je fais sans les images mais avec les bonnes données et interactions
+<!-- ## Backlog -->
+<details><summary><h2 style="display: inline-block; width: 90%;">Liste de tâches</h2></summary>
+
+### Actuelles
 - 🔹 (PrototypeMatchStuff) Reconstruire des prototypes de cartes fonctionnels pour les catégories (principales, pas champion)
+    - Je viens de reprendre le projet, après une pause depuis la présentation pour mon projet de fin de licence.
+    - Mon but actuel c'est de refaire une vraie partie simple. Donc je fais sans les images mais avec les bonnes données et interactions
 
-### Next
+### Suivantes
+- PrototypeMatchStuff
 - Bugs
     - (web/Card) fix: removeEventListener("keydown", handleEscape) not working in ModalCardFullscreen
 - Config
@@ -62,12 +66,12 @@ Plateformes cibles : Web et mobile
     - Apparence du Deck : plus tard je ferai que le composant deck son apparence c’est une pile de cardBack, exactement le nombre de cartes restantes, avec pour chacune un rotate randIntInRange btwn 1 et -1, peut-être une ombre mais c’est trop demandé. Et aussi une anim de mélange du deck.
 - Deck builder
     - Choisir sleeves deck (main deck et extra deck) + Upload custom sleeves
+</details>
 
+<br>
 
-<br><br>
-
-<details>
-<summary><h2 style="display: inline-block; width: 90%;">Comment contribuer</h2></summary>
+<!-- ## Comment contribuer -->
+<details><summary><h2 style="display: inline-block; width: 90%;">Comment contribuer</h2></summary>
 
 ### Quick start
 - Cloner repo
@@ -106,14 +110,14 @@ git push && git push --tags
 </details>
 
 
-<br><br>
+<br>
 
 
 ## Ecosystème
 
-### Technologies utilisées
-- Express : Framework backend
-- React et React Native : Framework frontend
+### Tech stack
+- Back end : Express.js
+- Front end : React, React Native
 - Typescript
 
 <details>
@@ -140,10 +144,8 @@ HeroCardGame/
 
 - Organisation des components
     - Chaque component peut commencer par une div.ComponentName, main si View, pour le différencier des autres dans le css main.ComponentName
-
 - Pages
-    - Liste des routes sont dans /sitemap
-
+    - Liste des routes sont dans /sitemap (plus maintenant)
 - Routes
     - Get
         - back:server.ts a une route catch all qui redirige vers web. Il sert aussi les fichiers statics de web/dist
@@ -151,42 +153,34 @@ HeroCardGame/
     - Post 
         - Les routes post sont dans shared:src/index.ts (pas sharedRoutes.ts)
         - Leur logique est dans back:server.ts
-
 - Fonctionnement du shared
     - Dans src :
         - Chaque dossier contient un index.ts qui export * from autreFichierDuDossier.ts
         - Le shared:package.json doit exporter chaque index.js
         - Pour l'utilisation on import 
         - shared n'a pas besoin d'être compilé, ses fichiers sont importés tels quels par les autres packages
-
 - État global de l'application
     - Géré via React Context (AppContext) dans web/src/AppContext.tsx
     - Contient l'état mutable comme le thème actuel, et des utilitaires comme setPageTitle
-
 - Gestion des thèmes
     - Thèmes "light" et "dark" définis dans web/src/themes.ts
     - Variables CSS injectées dynamiquement dans le head via loadThemesStyles() appelée dans main.tsx
     - Thème stocké dans localStorage, appliqué sur #app avec classe "dark" pour le thème sombre
-
 - Types TypeScript
     - Définis dans web/src/types.d.ts pour les types partagés (Theme, AppState, etc.)
     - Utilisés pour typer l'état et les props des composants
-
 - Configuration de build
     - Vite pour le web avec alias : '@' pour src/, '@herocardgame/shared' pour shared/
     - Monorepo avec workspaces npm pour gérer les dépendances partagées
-
 - Gestion des cartes
     - Images des cartes stockées dans web/public/cards/ (à extraire de z-resources/heroCards_20260424.7z)
     - Composant cards.tsx pour afficher les cartes
     - Vues de debug : /debug/card pour CardViewer, /debug/board pour Match
-
 - Backend Express
     - Sert les fichiers statiques du build web en prod
     - Route catch-all pour SPA (retourne index.html)
     - API simple avec /api/hello pour tests
     - Port 3000 en dev
-
 - Mobile (React Native)
     - Utilise Expo pour le développement
     - Structure similaire au web mais adaptée mobile
@@ -196,4 +190,5 @@ HeroCardGame/
 <br>
 
 ##
-Date de départ : 14 décembre 2025
+Date de départ : 14 décembre 2025  
+[github.com/csaxemard/HeroCardGame](https://github.com/csaxemard/HeroCardGame)  

@@ -1,12 +1,15 @@
 .prototypeCard {
-    width: 300px;
+    position: relative;
+    /* width: 300px; */
+    max-height: 100%;
+    max-width: 100%;
     aspect-ratio: 2142 / 2992;
-    padding: 20px;
+    padding: 15px;
     margin: 20px auto;
 
     background-color: var(--typeColor, #555);
     /* background-image: linear-gradient(160deg, #420530 0%, #fff 100%); */
-    
+
     border-radius: 10px;
 
     display: flex;
@@ -17,14 +20,17 @@
 
     .topInfos {
         width: 100%;
+        box-shadow: 0 1px 5px #00000090;
+        z-index: 1;
 
         > div:first-child {
             width: 100%;
             padding: 0 5px;
+            padding: 5px;
 
-            background-color: #fff4;
-            border-radius: 5px;
-            
+            background-color: #fffc;
+            /* border-radius: 5px; */
+
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -37,12 +43,14 @@
 
             .type {
                 font-size: 1.2em;
-                width: 50px;
-                height: 50px;
+                width: 30px;
+                height: 30px;
                 flex-shrink: 0;
+
                 border-radius: 100%;
-                /* background-color: #ccc; */
-                border: 1px solid #ccc;
+                background-color: #fff;
+                border: 1px solid var(--typeColor);
+
                 display: flex;
                 flex-direction: column;
                 align-items: center;
@@ -52,26 +60,103 @@
         }
     }
 
-    .family {
-        color: black;
-        /* text-shadow: 0px 0px 3px #fff; */
-        /* -webkit-text-stroke: .1px white; */
-        font-size: .9em;
-        align-self: flex-start;
+    .imageArea {
+        position: relative;
+        flex-grow: 1;
+        max-width: 100%;
+        /* max-height: 50%; */
+
+        box-shadow: 0 0 5px #0009;
+
+        img {
+            aspect-ratio: 1 / 1;
+            max-width: 100%;
+            width: 100%;
+            max-height: 100%;
+            object-fit: cover;
+        }
+
+        .stars {
+            position: relative;
+            align-self: end;
+            /* top: 74%; */
+            /* right: 7%; */
+            float: right;
+            top: -9%;
+            right: 3%;
+            width: 30px;
+            height: 30px;
+            font-size: 1.4em;
+            scale: 1.1;
+
+            border-radius: 100px;
+            background-color: white;
+
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+
+            &::before {
+                content: attr(data-stars);
+                position: absolute;
+                height: 100%;
+                width: 100%;
+
+                font-size: .8em;
+                color: #991604;
+                font-family: cursive;
+                font-weight: bold;
+
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+
+                pointer-events: none;
+            }
+        }
     }
 
-    .imageArea {
-        aspect-ratio: 1 / 1;
-        flex-grow: 1;
-        width: fit-content;
-        height: 100px;
-        max-width: 100%;
-        background-color: cornflowerblue;
+    .family {
+        font-size: .9em;
+        align-self: flex-start;
+        margin-bottom: 2px;
+
+        color: black;
+        text-shadow: 0px 0px 3px #fff;
+        /* -webkit-text-stroke: .1px white; */
+        font-family: cursive;
     }
 
     .bottomInfos {
+        padding: 5px;
         display: flex;
         justify-content: space-between;
         gap: 10px;
+        background-color: #fffc;
+
+        .description {
+            color: black;
+            font-size: .6em;
+            white-space: pre-line;
+        }
+    }
+
+    .footerInfos {
+        position: absolute;
+        bottom: 2px;
+        width: 100%;
+        padding: 0 15px;
+
+        font-size: .5em;
+        color: #fff9;
+        
+        display: flex;
+        justify-content: space-between;
+        
+        span:first-child {
+            
+        }
     }
 }

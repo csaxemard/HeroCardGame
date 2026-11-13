@@ -45,7 +45,7 @@ export const prototypeCards: Record<number, PrototypeCard_Type> = {
     42: { id: 42, name: "Crow", category: "heros", family: "", type: "vent", stars: 5, baseAtk: 1900, baseDef: 2400, collection: "Wings of Destiny" },
     43: { id: 43, name: "Leyvah'a, Atalante aux Chaînes", category: "combattant", family: "Atlantis", type: "eau", stars: 4, baseAtk: 500, baseDef: 400, collection: "Wings of Destiny" },
     44: { id: 44, name: "La 4eme Dimension", category: "artefact", family: "", type: "magie", stars: 5, collection: "Wings of Destiny" },
-    45: { id: 45, name: "Déferlante Divine Atalante", category: "artefact", family: "Atlantis", type: "eau", stars: 4, collection: "Wings of Destiny" },
+    45: { id: 45, name: "Déferlante Divine Atalante", category: "artefact", family: "Atlantis", type: "eau", stars: 4, description: "INVOCATION : Tant que cette carte est face recto, tous les alliés et héros sur le terrain deviennent de type EAU.\n\nCIMETIERE : Tous les allies et heros regagnent leur type d'origine (cet effet ne peut pas être désactivé).", collection: "Wings of Destiny" },
     46: { id: 46, name: "Zæbrih's", category: "heros", family: "Atlantis", type: "eau", stars: 6, baseAtk: 2500, baseDef: 2000, collection: "Wings of Destiny" },
     47: { id: 47, name: "Okanah'o", category: "heros", family: "Atlantis", type: "eau", stars: 6, baseAtk: 2200, baseDef: 2000, collection: "Wings of Destiny" },
     48: { id: 48, name: "Lance d'Écailles Radieuse", category: "artefact", family: "Atlantis", type: "eau", stars: 2, collection: "Wings of Destiny" },

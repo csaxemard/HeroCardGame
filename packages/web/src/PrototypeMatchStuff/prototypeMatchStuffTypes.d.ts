@@ -17,4 +17,5 @@ export interface PrototypeCard_Type {
     baseDef?: number,
     description?: string,
     collection:  PrototypeCardCollections_Type,
+    
 };
