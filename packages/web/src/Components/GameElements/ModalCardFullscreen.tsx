@@ -1,9 +1,9 @@
-import type { CardType } from "@/types"
+import type { CardDetails } from "@/types"
 import "./ModalCardFullscreen.css"
 import { useEffect } from "react"
 
 interface ModalCardFullscreenProps {
-    /** La carte a afficher (n'affiche pas un Card, juste l'image) */ card: CardType,
+    /** La carte a afficher (n'affiche pas un Card, juste l'image) */ card: CardDetails,
     /** - Callback appelé on modal closed */ onModalClosed: () => void,
 }
 
@@ -34,7 +34,7 @@ export default function ModalCardFullscreen({ card, onModalClosed }: ModalCardFu
     return (
         <div className="modal cardFullscreen" onClick={handleClickModal}>
             <button className="removeModal charAsIcon" title="Fermer (Échap)" onClick={onModalClosed}>⨉</button>
-            <img src={card.img.replace("215/", "1000/")} alt={card.name} />
+            <img src={card.img.replace("215/", "600/")} alt={card.name} />
         </div>
     )
 }

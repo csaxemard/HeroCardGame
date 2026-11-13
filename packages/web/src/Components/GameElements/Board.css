@@ -16,7 +16,7 @@
     margin: 0 auto;
     /* overflow: hidden; */
     position: relative;
-    
+
     transition: var(--transitionDefaults), transform 1s ease-out, opacity 1s;
     border-radius: 12px;
 
@@ -66,11 +66,13 @@
             position: absolute;
             top: -500px;
         }
+
         &.graveyard, &.extraGraveyard {
             z-index: 4;
+
             /* transition: opacity .2s; */
             &:hover {
-                z-index: 5 ;
+                z-index: 5;
                 /* opacity: 1; */
 
             }
@@ -82,7 +84,17 @@
 
         &.opponent {
             border-color: darksalmon;
-            rotate: 180deg;
+            .Deck {
+                .Deck-cardContainer {
+                    rotate: 180deg;
+                }
+
+            }
+            
+            img {
+                rotate: 180deg;
+            }
+            /* rotate: 180deg; */
             /* opacity: .5; */
             /* filter: brightness(.5); */
         }
@@ -94,10 +106,24 @@
             border-radius: 4px;
             user-select: none;
             background-color: rgba(0, 0, 0, 0);
+
+            &.opponent {
+                rotate: 180deg;
+            }
         }
 
         &.hasContent {
             background-color: transparent;
+        }
+
+        &.summonable {
+            cursor: pointer;
+            border-color: #90EE90;
+            border-width: 2px;
+        }
+
+        &.summoningTarget {
+            background-color: rgba(144, 238, 144, 0.3);
         }
     }
 
@@ -122,5 +148,5 @@
         height: .5px;
         transform: translateY(-50%);
     }
-    
+
 }

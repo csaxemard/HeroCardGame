@@ -7,13 +7,15 @@ interface HandProps {
     cardInstances: CardInstance[];
     /** - Default: false */ isOpponentHand?: boolean;
     /** - Définit si les cartes se soulèvent on card hover. (Default: false)  
-     * Utilisé pour l'UI de mes Matchs */ canTranslateOnHover?: boolean
-     onCardContextMenu: (cardId: number) => void
+     * Utilisé pour l'UI de mes Matchs */ canTranslateOnHover?: boolean;
+    onCardContextMenu: (cardId: number) => void;
+    onCardClick?: (cardInstanceUuid: string) => void;
+    selectedCardUuid?: string;
 }
 
 
 
-export default function Hand({ cardInstances, isOpponentHand = false, canTranslateOnHover, onCardContextMenu }: HandProps) {
+export default function Hand({ cardInstances, isOpponentHand = false, canTranslateOnHover, onCardContextMenu, onCardClick, selectedCardUuid }: HandProps) {
 
     function adjustOverlap(container: HTMLElement) {
         const cards = Array.from(container.children) as HTMLElement[];
@@ -62,7 +64,7 @@ export default function Hand({ cardInstances, isOpponentHand = false, canTransla
             <div className="cardsContainer" ref={cardsContainerRef}>
                 {cardInstances.map((instance, index) => (
                     <div key={instance.uuid} className={"cardContainer" + (canTranslateOnHover ? " canTranslateOnHover" : "")} style={{ zIndex: index }}>
-                        <Card cardId={isOpponentHand ? 0 : instance.cardId} cardInstanceUuid={instance.uuid} isFaceDown={isOpponentHand} onContextMenu={onCardContextMenu}/>
+                        <Card cardId={isOpponentHand ? 0 : instance.cardId} cardInstanceUuid={instance.uuid} isFaceDown={isOpponentHand} onContextMenu={onCardContextMenu} onClick={() => !isOpponentHand && onCardClick?.(instance.uuid)} isSelectable={!isOpponentHand && selectedCardUuid === instance.uuid} />
                     </div>
                 ))}
             </div>

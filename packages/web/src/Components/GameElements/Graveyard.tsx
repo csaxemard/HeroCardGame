@@ -6,12 +6,13 @@ interface GraveyardProps {
     /** - Liste des cardInstances que contient ce Graveyard */ cardInstances: CardInstance[];
     /** - Default: false */ isExtraGraveyard?: boolean,
     /** - Default: false */ isBanishedZone?: boolean,
+    onCardContextMenu: (cardId: number) => void
 }
 
 
 
-export default function Graveyard({ cardInstances, isExtraGraveyard = false, isBanishedZone = false }: GraveyardProps) {
-    isBanishedZone   // pour enlever l'erreur nused declaration de ts qui empeche le build
+export default function Graveyard({ cardInstances, isExtraGraveyard = false, isBanishedZone = false, onCardContextMenu  }: GraveyardProps) {
+    isBanishedZone   // pour enlever l'erreur unused declaration de ts qui empeche le build
     const visibleCards = cardInstances.slice(0, 8);
     const count = Math.min(visibleCards.length, 5);
     const offsetX = isExtraGraveyard ? -10 : 10;
@@ -23,7 +24,7 @@ export default function Graveyard({ cardInstances, isExtraGraveyard = false, isB
             className="gy-cardContainer"
             style={{ transform: `translate(${i * offsetX}px)`, rotate: `${i * (isExtraGraveyard ? -1 : 1)}deg` }}
         >
-            <Card cardId={instance.cardId} cardInstanceUuid={instance.uuid} />
+            <Card cardId={instance.cardId} cardInstanceUuid={instance.uuid} onContextMenu={onCardContextMenu} />
         </div>
     ))
 

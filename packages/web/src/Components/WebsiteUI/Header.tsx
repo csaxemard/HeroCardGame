@@ -1,13 +1,15 @@
 import { Link } from "react-router"
 import "./Header.css"
 import { updateThemeInLocalStorage } from "@/themes";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { AppContext } from "@/AppContext";
 import type { AppState } from "@/types";
 
 
 
 export default function Header() {
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
     // Functions :
     function switchTheme() {
         if (appState.currentTheme == "light") {
@@ -15,6 +17,10 @@ export default function Header() {
         } else {
             setAppState((prev: AppState): AppState => ({ ...prev, currentTheme: "light" }))
         }
+    }
+
+    function closeMobileMenu() {
+        setMobileMenuOpen(false);
     }
 
     // function openDrawer(event: React.SyntheticEvent) {
@@ -69,7 +75,18 @@ export default function Header() {
         >
             <Link to="/" className="appLogoLink">Hero Card Game</Link>
 
-            <nav className="navbar">
+            <button 
+                className={`hamburgerMenu ${mobileMenuOpen ? 'open' : ''}`}
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                type="button"
+                aria-label="Toggle mobile menu"
+            >
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+
+            <nav className={`navbar ${mobileMenuOpen ? 'open' : ''}`}>
                 <button className="charAsIcon themeSwitch" type="button" role="switch"
                     onClick={switchTheme}
                     title="Activer / Désactiver le mode sombre">
@@ -85,10 +102,10 @@ export default function Header() {
                         <Link to={"/debug/card/1"} className="navLink navDrawerItem">Card viewer</Link>
                     </ul>
                 </div> */}
-                <Link to={"/catalogue/1"} className="navLink navDrawerItem">Catalogue</Link>
-                <Link to={"/decks"} className="navLink navDrawerItem">Mes decks</Link>
-                <Link to={"/match"} className="navLink navDrawerItem">Match</Link>
-                <Link to="/" className="navLink">Accueil</Link>
+                <Link to={"/catalogue/1"} className="navLink navDrawerItem" onClick={closeMobileMenu}>Catalogue</Link>
+                <Link to={"/decks"} className="navLink navDrawerItem" onClick={closeMobileMenu}>Mes decks</Link>
+                <Link to={"/match"} className="navLink navDrawerItem" onClick={closeMobileMenu}>Match</Link>
+                <Link to="/" className="navLink" onClick={closeMobileMenu}>Accueil</Link>
 
             </nav >
         </header >

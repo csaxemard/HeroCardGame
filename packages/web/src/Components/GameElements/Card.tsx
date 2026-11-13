@@ -1,5 +1,5 @@
 import "./Card.css"
-import { cards } from "@/cards";
+import { allCards } from "@/cards";
 import { motion } from "motion/react";
 
 interface CardProps {
@@ -10,12 +10,14 @@ interface CardProps {
     // Options :
     /** - Callback exécuté quand on Rclick une carte (recto only).  
      * Le callback prend un argument cardId */ onContextMenu?: (cardId: number) => void;
+    /** - Callback exécuté quand on Rclick une carte */ onClick?: () => void;
     /** - Default : false */ isGrabbable?: boolean,
     /** - Default : false */ isSelectable?: boolean,
     // Style : 
     /** - Rotate card slightly to add realism (default: false) */ shouldRotate?: boolean,
     /** - Default : true */ hasRoundedCorners?: boolean,
     /** - Default : true */ hasBorder?: boolean,
+    imgResolution?: 215 | 450 | 600 | 1000,
 }
 
 
@@ -30,12 +32,14 @@ export default function Card({
     isFaceDown,
     // Options :
     onContextMenu,
+    onClick,
     isGrabbable = false,
     isSelectable = false,
     // Style :
     hasRoundedCorners = false,
     hasBorder = true,
     shouldRotate = false,
+    imgResolution = 215,
 }: CardProps) {
 
     function handleRClick(e: React.SyntheticEvent) {
@@ -48,7 +52,7 @@ export default function Card({
 
 
     // Récupère la carte associée à l'id
-    const card = cards[cardId] ?? null
+    const card = allCards[cardId] ?? null
     if (!card && !isFaceDown) return <p>No card found with id {cardId}</p>
 
     // JSX stuff
@@ -70,10 +74,12 @@ export default function Card({
             }
             layoutId={cardInstanceUuid}   // Expl : Fait que quand l'élément est dérendu à un endroit et rerendu (même layoutId) à un autre, on aura une translation entre les deux endroits
             style={shouldRotate ? { transform: `rotate(${randomRotate}deg)` } : undefined}
+            onClick={() => !isFaceDown && onClick?.()}
             onContextMenu={handleRClick}
+            initial={{ transform: `rotate(0)` }}
         >
             {!isFaceDown ?
-                <img src={card.img} alt={card.name} />
+                <img src={card.img.replace("215/", `${imgResolution}/`)} alt={card.name} />
                 : isExtra ?
                     <img src="/extraCardBack.png" alt="cardBack" />
                     : <img src="/cardBack.png" alt="cardBack" />

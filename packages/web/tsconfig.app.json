@@ -23,6 +23,7 @@
         "erasableSyntaxOnly": true,
         "noFallthroughCasesInSwitch": true,
         "noUncheckedSideEffectImports": true,
+        "ignoreDeprecations": "6.0", // A voir si je garde, ça ignore l'erreur de baseUrl
         "baseUrl": ".",
         "paths": {
             "@/*": [ "./src/*" ]

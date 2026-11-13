@@ -1,9 +1,10 @@
 # Hero Card Game
+v0.3.0 (Back from hiatus)
 
 ## Concept
-Ce projet adapte au format numérique le jeu de cartes Hero.  
+Ce projet adapte au format numérique le jeu de cartes [Hero Card Game](https://www.instagram.com/hero_cardgame/), créé par Gricha Saxemard.  
 Plateformes cibles : Web et mobile  
-Date de départ : 14 décembre 2025  
+- Site web provisoire : [hero-card-game-nu.vercel.app](https://hero-card-game-nu.vercel.app/)
 
 
 <br><br>
@@ -11,9 +12,9 @@ Date de départ : 14 décembre 2025
 
 ## Backlog
 ### Current
-- (web/Match) Add basic match steps required to win
-    - Je suis là : Continuer de faire les phases du tour dans le déroulé basic du match
-    - Puis envoyer à gpt
+- Je viens de reprendre le projet, après une pause depuis la présentation pour mon projet de fin de licence.
+- Mon but actuel c'est de refaire une vraie partie simple. Donc je fais sans les images mais avec les bonnes données et interactions
+- 🔹 (PrototypeMatchStuff) Reconstruire des prototypes de cartes fonctionnels pour les catégories (principales, pas champion)
 
 ### Next
 - Bugs
@@ -27,6 +28,9 @@ Date de départ : 14 décembre 2025
     - (cartes) Prendre d'autres cartes / familles depuis duellingbook
     - (cartes) Mettre un filigrane sur chaque carte, c’est important, xnconvert il le fait. (Je peux l’enlever pour l’exam peut-être). Associer l’id de rainbowpath et gricha pour que eux utilisent les cartes sans filigrane peut-être ?
 - Match
+    - (web/Match) Add basic match steps required to win
+    - Pouvoir Rclick sur une carde du ModalChoseCard pour l'avoir en grand
+
     - (réfl) je me demande si à ce stade je ne mettrais pas déjà en place la bdd, ça ne devrait pas être trop long i guess ? Compliqué surement pas. Cenqui est difficile c'est que si je le fais maintenant au lieu de le hardcoder d’abord je risque de devoir modifier les tables pour suit my needs après et ça c’est chiant je crois.
     - 🔹(web/Match) Turn 0 - Phase 0. Basique.
         - Ensuite on aura le début de partie. Nourrir le deck avec 30 random cards de type non hero ou darkhero.
@@ -56,12 +60,14 @@ Date de départ : 14 décembre 2025
     - Ajouter des animations sympas
     - Tooltip recording mouse maintain on card (spinner ? [spinners](https://cssloaders.github.io/)), ou bien Rclick simple
     - Apparence du Deck : plus tard je ferai que le composant deck son apparence c’est une pile de cardBack, exactement le nombre de cartes restantes, avec pour chacune un rotate randIntInRange btwn 1 et -1, peut-être une ombre mais c’est trop demandé. Et aussi une anim de mélange du deck.
+- Deck builder
+    - Choisir sleeves deck (main deck et extra deck) + Upload custom sleeves
 
 
 <br><br>
 
 <details>
-<summary><h2 style="display: inline-block; width: 90%;">Contribution</h2></summary>
+<summary><h2 style="display: inline-block; width: 90%;">Comment contribuer</h2></summary>
 
 ### Quick start
 - Cloner repo
@@ -80,6 +86,13 @@ Date de départ : 14 décembre 2025
         npm run build:mobile   ->   expo build
         npm run build:shared   ->   tsc
 ```
+
+### Instructions de commit
+Mettre à jour le numéro de version dans le readme et dans package.json
+Vérifier les changements des fichiers, ouvrir le projet pour voir si je n'ai rien oublié
+git commit
+git tag vX.Y.Z
+git push && git push --tags
 
 ### Instructions de déploiement
 - Déploiement vercel front only
@@ -180,7 +193,7 @@ HeroCardGame/
 </details>
 
 
-
-
 <br>
-<br>
+
+##
+Date de départ : 14 décembre 2025

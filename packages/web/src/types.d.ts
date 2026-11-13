@@ -13,22 +13,41 @@ export type AppState = {
 
 
 
-// --- Concernant les cartes et le plateau ---
-
+// Concernant les joueurs :
 export type PlayerType = "opponent" | "player";
-export type CardRoles = "hero" | "darkHero" | "halfHero" | "multiHero" | "monster" | "field";
-export type MonsterSubRoles = "fighter" | "shield" | "archer";
-export type CardTypes = "opponent" | "player";
+
+
+
+// --- Concernant les cartes ---
+export type CardRole = "hero" | "darkHero" | "halfHero" | "multiHero" | "allied";
+export type CardTyping = "Magie" | "Force" | "Plante" | "Feu" | "Eau" | "Vent";
+export type AllySubRole = "sword" | "archer" | "shield" | "any";
+export type Archetype = null | "WingsOfDestiny" | "ÂmesDamnées" | "any";
+export type EffectKind = "continu" | "combat" | "invocation" | "cimetière" | "flip" | "reverse" | "rituel" | "contrecoup" | "contresort"
+export interface CardDetails {
+    id: number,
+    name: string,
+    img: string,
+    role?: CardRole,
+    type?: CardTyping, // 
+    atk?: number | null,
+    def?: number | null,
+    stars?: number //
+}
+
+
+
+// --- Concernant le plateau ---
+
 export type ZonesNames = "hero" | "swordL" | "swordR" | "shield" | "archerL" | "archerR" | "field" | "deck" | "extraDeck" | "graveyard" | "extraGraveyard" | "banished";
 export type ZonesNamesByPlayer = {
     player: "hero" | "swordL" | "swordR" | "shield" | "archerL" | "archerR" | "field" | "deck" | "extraDeck" | "graveyard" | "extraGraveyard" | "banished";
     opponent: "hero" | "swordL" | "swordR" | "shield" | "archerL" | "archerR" | "field" | "deck" | "extraDeck" | "graveyard" | "extraGraveyard" | "banished";
 }
 
-export interface CardType { id: number, name: string, type?: "hero" | "monster", img: string }
 export interface CardInstance {
     cardId: number;
-    uuid: string; // UUID
+    uuid: string;
 }
 
 export interface ZoneConfig {
@@ -79,4 +98,12 @@ export type BoardZonesContent = Record<PlayerType, HalfBoardZonesContent>;
 // --- Conernant les matchs ---
 
 export type PhaseType = | "draw" | "standby" | "flip" | "attack" | "shift" | "end"
+export type PhaseStep =
+    | "draw_start" | "draw_placeNormalHero" | "draw_drawCard" | "draw_end"
+    | "standby_start" | "standby_end"
+    | "flip_start" | "flip_end"
+    | "attack_start" | "attack_end"
+    | "shift_start" | "shift_end"
+    | "endPhase_start" | "endPhase_end"
 
+export type FightingZones = | "hero" | "swordL" | "swordR" | "archerL" | "archerR" | "shield"

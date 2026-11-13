@@ -2,15 +2,16 @@ import "./Match.css"
 import "@/Components/GameElements/Board.css";
 import { useEffect, useRef, useState } from "react";
 import ClassicLayout from "@/Layouts/ClassicLayout";
-import { cardIdsByRole, cards } from "@/cards";
+import { cardIdsByRole, allCards } from "@/cards";
 import ModalCardFullscreen from "@/Components/GameElements/ModalCardFullscreen";
-import type { BoardZonesConfig, PlayerType, ZoneConfig, ZonesNames } from "@/types";
+import type { BoardZonesConfig, CardInstance, PlayerType, ZoneConfig, ZonesNames } from "@/types";
 import { MatchManager } from "@/Core/MatchManager";
 import InfosBox from "@/Components/MatchUI/InfosBox";
 import Card from "@/Components/GameElements/Card";
 import Hand from "@/Components/GameElements/Hand";
 import Graveyard from "@/Components/GameElements/Graveyard";
 import Deck from "@/Components/GameElements/Deck";
+import ModalChoseCards from "@/Components/GameElements/ModalChoseCards";
 
 
 
@@ -37,15 +38,11 @@ export const UiFunctions = {
 
 
 export default function Match() {
-    function removeModal() {
-        set_showModalCardFullscreen(false)
-    }
-
     function generateDecks(): { deck: number[], extraDeck: number[] } {
         const deckSize = Math.floor(Math.random() * 11) + 30; // 30-40
         const extraSize = Math.floor(Math.random() * 10) + 3; // 3-12
 
-        const monsterPool = cardIdsByRole.monster;
+        const monsterPool = cardIdsByRole.allied;
         const heroPool = [...cardIdsByRole.hero, ...cardIdsByRole.darkHero, ...cardIdsByRole.halfHero];
 
         const deck: number[] = [];
@@ -93,14 +90,65 @@ export default function Match() {
     }
 
     // Actions passed to components
-    function showModal(cardId: number) {
-        set_modalCardFullscreen_cardId(cardId)
-        set_showModalCardFullscreen(true)
+    function handleClickDecidingFirstPlayerButtons(playerChosen: PlayerType) {
+        const result = matchManager.setFirstPlayer(playerChosen)
+        if (!result.success) console.log(result.error)
+        else matchManager.goToNextStep()
     }
 
-    function drawOnClickDeck() {
-        matchManager.drawCards("player", matchState.player.numberOfCardsToDraw)
-        if (!matchState.player.hasDrawnInitialCards) matchManager.confirmInitialDraw("player")
+    function hideModalCardFullscreen() { set_modalCardFullscreen({ isOpen: false, cardId: -1 }) }
+    function showModalCardFullscreen(cardId: number) { set_modalCardFullscreen({ isOpen: true, cardId: cardId }) }
+
+    function hideModalChoseCards() { set_modalChoseCards({ isOpen: false, cardInstances: [], choiceText: "" }) }
+    function showModalChoseCards(cardInstances: CardInstance[], choiceText: string, onCardImgClicked?: (cardInstanceUuid: string) => void) {
+        set_modalChoseCards({ isOpen: true, cardInstances, choiceText, onCardImgClicked })
+    }
+    function handleModalChoseCardImgClicked(playerType: PlayerType, uuid: string) {
+        const result = matchManager.placeNormalHero(playerType, uuid)
+        hideModalChoseCards()
+        if (!result.success) console.log(result.error)
+        else matchManager.goToNextStep()
+    }
+
+    function handleOnDeckClicked() {
+        const result = matchManager.drawCards("player", matchState.player.numberOfCardsToDraw)
+
+        if (result.success && matchState.matchStep == "turnsLoop" && !matchState.turn && !matchState.player.hasDrawnInitialCards) {
+            matchManager.confirmInitialDraw("player")
+        } else if (result.success) {
+            matchManager.goToNextStep()
+        } else if (!result.success && result.error == "emptyDeck" && matchState.phase == "draw" && matchState.phaseStep == "draw_drawCard" && matchState.currentPlayer) {
+            console.log(result.error)
+            matchManager.setWinner(matchState.currentPlayer, "emptyDeck")
+        } else if (!result.success && result.error == "cantDraw") {
+            console.log(result.error)
+        } else if (!result.success) {
+            console.log(result.error)
+        }
+    }
+
+    function handleCardClick(uuid: string) {
+        if (summoningZone) {
+            const result = matchManager.summonMonster("player", uuid, summoningZone as any);
+            if (result.success) {
+                set_selectedCardUuid(null);
+                set_summoningZone(null);
+            }
+        } else {
+            set_selectedCardUuid(selectedCardUuid === uuid ? null : uuid);
+        }
+    }
+
+    function handleZoneClick(zoneName: string) {
+        if (selectedCardUuid) {
+            const result = matchManager.summonMonster("player", selectedCardUuid, zoneName as any);
+            if (result.success) {
+                set_selectedCardUuid(null);
+                set_summoningZone(null);
+            }
+        } else {
+            set_summoningZone(summoningZone === zoneName ? null : zoneName);
+        }
     }
 
     // Helper JSX
@@ -110,28 +158,53 @@ export default function Match() {
 
         if (isDeck) {
             const instances = zoneName === 'extraDeck' ? playerState.extraDeck : playerState.deck;
-            const canDraw = playerType === 'player' && !isExtra && playerState.numberOfCardsToDraw > 0;
+
+            let onClickCallback = undefined;
+            let isClickableMessage = undefined;
+            if (playerType === 'player' && !isExtra && playerState.numberOfCardsToDraw > 0 && matchState.matchStep == "turnsLoop" && !matchState.phase) {
+                isClickableMessage = "Piocher";
+                // canDraw deck at turn 0
+                onClickCallback = handleOnDeckClicked;
+            } else if (playerType === 'player' && !isExtra && playerState.numberOfCardsToDraw > 0 && matchState.currentPlayer == "player" && matchState.phase == "draw" && matchState && matchState.phaseStep == "draw_drawCard") {
+                isClickableMessage = "Piocher";
+                // canDraw deck normal
+                onClickCallback = handleOnDeckClicked;
+            } else if (playerType === "player" && matchState.currentPlayer == playerType && matchState.currentPlayer == "player" && matchState.phase == "draw" && matchState.phaseStep == "draw_placeNormalHero" && isExtra) {
+                isClickableMessage = "";
+                // can choose Hero
+                onClickCallback = () => showModalChoseCards(instances, "Choisissez votre héros", (uuid) => handleModalChoseCardImgClicked(playerType, uuid))
+            }
+
             if (instances.length > 0) {
-                content = <Deck cardInstancesUuids={instances.map(c => c.uuid)} isExtraDeck={isExtra} onClick={canDraw ? () => drawOnClickDeck() : undefined} />;
+                content = <Deck cardInstancesUuids={instances.map(c => c.uuid)} isExtraDeck={isExtra} onClick={onClickCallback} isClickableMessage={isClickableMessage} />;
             }
         } else if (isGraveyard) {
             const instances = zoneName === 'extraGraveyard' ? playerState.extraGraveyard : playerState.graveyard;
             if (instances.length > 0) {
-                content = <Graveyard cardInstances={instances} isExtraGraveyard={isExtra} />;
+                content = <Graveyard cardInstances={instances} isExtraGraveyard={isExtra} onCardContextMenu={showModalCardFullscreen} />;
+            }
+        } else if (zoneName == "hero") {
+            const instances = playerState.fightingZones.hero;
+            if (instances && instances.length > 0) {
+                content = <Graveyard cardInstances={instances} isExtraGraveyard={isExtra} onCardContextMenu={showModalCardFullscreen} />;
             }
         } else {
             const card = playerState.fightingZones[zoneName as keyof typeof playerState.fightingZones];
-            if (card) {
-                content = <Card cardId={card.cardId} cardInstanceUuid={card.uuid} onContextMenu={() => showModal(card.cardId)} />;
+            if (card && 'cardId' in card) {
+                content = <Card cardId={card.cardId} cardInstanceUuid={card.uuid} onContextMenu={() => showModalCardFullscreen(card.cardId)} />;
             }
         }
 
         const placeholder = <p className="zoneName">{readableName}</p>;
 
+        const isSummonZone = playerType === 'player' && !['hero', 'deck', 'extraDeck', 'graveyard', 'extraGraveyard', 'banished', 'field'].includes(zoneName);
+        const isClickableSummonZone = isSummonZone && matchState.phase && matchState.currentPlayer === 'player' && !['draw'].includes(matchState.phase) && matchState.player.normalInvocationsLeft > 0;
+
         return (
-            <div
-                className={`zone ${playerType} ${zoneName} ${content ? "hasContent" : "hasNoContent"}`}
+            <div key={`${playerType}-${zoneName}`}
+                className={`zone ${playerType} ${zoneName} ${content ? "hasContent" : "hasNoContent"} ${isClickableSummonZone ? "summonable" : ""} ${summoningZone === zoneName ? "summoningTarget" : ""}`}
                 style={{ gridRowStart: gridRow, gridColumnStart: gridCol }}
+                onClick={() => isClickableSummonZone && handleZoneClick(zoneName)}
             >
                 {content || placeholder}
             </div>
@@ -150,7 +223,6 @@ export default function Match() {
 
     // Concernant les options de Hand
     const [canTranslateOnHover, setCanTranslateOnHover] = useState(true);
-
     useEffect(() => {
         const container = leftRef.current;
         if (!container) return;
@@ -162,11 +234,13 @@ export default function Match() {
 
     // Variables state :
     const [currentLeftPanel, set_currentLeftPanel] = useState<CurrentLeftPanel>(null)
-    const [showModalCardFullscreen, set_showModalCardFullscreen] = useState(false)
-    const [modalCardFullscreen_cardId, set_modalCardFullscreen_cardId] = useState<number>()
+    const [modalCardFullscreen, set_modalCardFullscreen] = useState<{ isOpen: boolean, cardId: number }>({ isOpen: false, cardId: -1 })
+    const [modalChoseCards, set_modalChoseCards] = useState<{ isOpen: boolean, cardInstances: CardInstance[], choiceText: string, onCardImgClicked?: (cardInstanceUuid: string) => void, }>({ isOpen: false, cardInstances: [], choiceText: "" })
     const [hideModalMatchEnd, set_hideModalMatchEnd] = useState(false)
-    // const [matchManager] = useState(new MatchManager(playerCustomDeck, opponentGenDecks, {opponentIsRandomBot: true})); // Sans debug
-    const [matchManager] = useState(new MatchManager(playerCustomDeck, opponentGenDecks, { skipDecideFirstPlayer: "player", opponentIsRandomBot: true, autoInitialDraw: true }));
+    const [selectedCardUuid, set_selectedCardUuid] = useState<string | null>(null);
+    const [summoningZone, set_summoningZone] = useState<string | null>(null);
+    const [matchManager] = useState(new MatchManager(playerCustomDeck, opponentGenDecks, { opponentIsRandomBot: true })); // Sans debug
+    // const [matchManager] = useState(new MatchManager(playerCustomDeck, opponentGenDecks, { skipDecideFirstPlayer: "player", opponentIsRandomBot: true, shouldPlayerAutoPlay: false }));
     const [matchState, setmatchState] = useState(() => matchManager.matchState);
 
     /* Previous, quand j'utilisais Board.tsx
@@ -258,31 +332,74 @@ export default function Match() {
             setmatchState({ ...newMatchState });
         });
 
-
-        (window as any).ms = matchState;
-
-        matchManager.startMatch();
-
-
-        return () => unsubscribe()
-    }, [matchManager])
-
-    // React to game events
-    useEffect(() => {
+        // React to game events
         matchManager.onEvent((event) => {
             switch (event.type) {
-                case 'startedDecidingFirstPlayer':
-                    set_currentLeftPanel('decidingFirstPlayer');
+                case "matchStepChanged":
+                    switch (event.matchStep) {
+                        case "matchStart":
+                            break;
+                        case "decidingFirstPlayer":
+                            set_currentLeftPanel('decidingFirstPlayer');
+                            break;
+                        case "turnsLoop":
+                            set_currentLeftPanel('board');
+                            break;
+                        case "matchWon":
+                            break;
+                        default:
+                            break;
+                    }
                     break;
-                case "startedTurnsLoop":
-                    set_currentLeftPanel('board');
-                    break
+                case 'turnChanged':
+                    break;
+                case 'phaseChanged':
+                    break;
+                case 'drawPhase_stepChanged':
+                    switch (event.phaseStep) {
+                        case "draw_placeNormalHero":
+                            break;
+
+                        default:
+                            break;
+                    }
+                    break;
+                case 'standbyPhase_stepChanged':
+                    break;
+                case 'flipPhase_stepChanged':
+                    break;
+                case 'attackPhase_stepChanged':
+                    break;
+                case 'shiftPhase_stepChanged':
+                    break;
+                case 'endPhase_stepChanged':
+                    break;
+                case 'matchWon':
+                    break;
+                case 'cardDrawn':
+                    break;
+                case 'cardMoved':
+                    break;
+                case 'panelChange':
+                    break;
                 case 'matchWon':
                     // déjà géré via matchState.winner, mais peux ajouter logique
                     break;
             }
         });
-    }, []);
+
+
+        (window as any).ms = matchState;
+        (window as any).atk = () => matchManager.attackZone("player", "hero", "hero");
+
+
+        matchManager.startMatch();
+
+
+
+        return () => unsubscribe()
+    }, [matchManager])
+
 
     const boardAndHandsContainerRef = useRef<HTMLDivElement>(null);
     const leftRef = useRef<HTMLDivElement>(null);
@@ -343,6 +460,9 @@ export default function Match() {
     );
 
 
+    console.log(matchState.matchStep, matchState.phase, matchState.phaseStep)
+
+
     return (
         <ClassicLayout hideFooter={true}>
             <main className="Match">
@@ -355,8 +475,8 @@ export default function Match() {
                                 : <>
                                     <p>Choisissez le joueur qui commencera la partie</p>
                                     <div className="flexHori">
-                                        <button onClick={() => matchManager.setFirstPlayer("player")}>Moi</button>
-                                        <button onClick={() => matchManager.setFirstPlayer("opponent")}>Adversaire</button>
+                                        <button onClick={() => handleClickDecidingFirstPlayerButtons("player")}>Moi</button>
+                                        <button onClick={() => handleClickDecidingFirstPlayerButtons("opponent")}>Adversaire</button>
                                     </div>
                                 </>
                             }
@@ -389,14 +509,15 @@ export default function Match() {
                                 </div>
                             }
                             <div className="boardAndHandsContainer" ref={boardAndHandsContainerRef}>
-                                <Hand cardInstances={matchState.opponent.hand} isOpponentHand onCardContextMenu={showModal} />
+                                <Hand cardInstances={matchState.opponent.hand} isOpponentHand onCardContextMenu={showModalCardFullscreen} />
                                 <div className="boardContainer fullHeight">
                                     {boardJSX}
                                 </div>
-                                <Hand cardInstances={matchState.player.hand} canTranslateOnHover={canTranslateOnHover} onCardContextMenu={showModal} />
+                                <Hand cardInstances={matchState.player.hand} canTranslateOnHover={canTranslateOnHover} onCardContextMenu={showModalCardFullscreen} onCardClick={handleCardClick} selectedCardUuid={selectedCardUuid || undefined} />
                             </div>
                         </>
                     }
+                    {modalChoseCards.isOpen && <ModalChoseCards cardInstances={modalChoseCards.cardInstances} choiceText={modalChoseCards.choiceText} onModalClosed={hideModalCardFullscreen} onCardImgClicked={modalChoseCards.onCardImgClicked} />}
                 </div>
 
                 <div className="right">
@@ -408,26 +529,43 @@ export default function Match() {
 
                     <InfosBox />
 
-                    { matchState.canChangePhase && 
-                    <button onClick={() => matchManager.changePhase()}>
-                        Passer à la {
-                            matchManager.getPhaseHumanReadableName(matchState.phase, true)
+
+                    {matchState.canChangePhase && <button onClick={() => matchManager.goToNextPhase()}>
+                        {matchState.phase == "end" ? "Terminer mon tour" :
+                            "Passer à la " + matchManager.getNextPhaseReadableName(matchState.phase!, true)
                         }
-                        </button>
+                    </button>}
+
+                    {matchState.phase == "attack" && matchState.currentPlayer == "player" &&
+                        <>
+                            {matchState.player.normalInvocationsLeft > 0 && <p style={{ fontSize: '0.9em', color: '#90EE90' }}>Invocations restantes: {matchState.player.normalInvocationsLeft}</p>}
+                            {matchState.player.fightingZones.hero.length > 0 && (
+                                <>
+                                    {!matchState.opponent.fightingZones.swordL && !matchState.opponent.fightingZones.swordR && <button onClick={() => matchManager.attackZone("player", "hero", "hero")}>Attaquer héros adverse</button>}
+                                    {(matchState.opponent.fightingZones.swordL || matchState.opponent.fightingZones.swordR) && <p style={{ fontSize: '0.85em', color: '#FFB6C6' }}>Héros bloqué par épée</p>}
+                                </>
+                            )}
+                            {matchState.opponent.fightingZones.swordL && <button onClick={() => matchManager.attackZone("player", "hero", "swordL")}>Attaquer épée gauche</button>}
+                            {matchState.opponent.fightingZones.swordR && <button onClick={() => matchManager.attackZone("player", "hero", "swordR")}>Attaquer épée droite</button>}
+                            {matchState.opponent.fightingZones.archerL && <button onClick={() => matchManager.attackZone("player", "hero", "archerL")}>Attaquer archer gauche</button>}
+                            {matchState.opponent.fightingZones.archerR && <button onClick={() => matchManager.attackZone("player", "hero", "archerR")}>Attaquer archer droit</button>}
+                            {matchState.opponent.fightingZones.shield && <button onClick={() => matchManager.attackZone("player", "hero", "shield")}>Attaquer bouclier</button>}
+                        </>
                     }
+
 
                     {matchState.winner && <button onClick={() => set_hideModalMatchEnd(!hideModalMatchEnd)}>Voir / cacher le plateau</button>}
 
                     {/* Debug : */}
-                    <button onClick={() => matchManager.drawCards("opponent", 1)}>Draw opponent</button>
-                    <button onClick={() => matchManager.drawCards("player", 1)}>Draw player</button>
-                    <button onClick={() => matchManager.killPlayer("player", "emptyDeck")}>Kill Player</button>
-                        <button onClick={() => matchManager.killPlayer("opponent", "emptyDeck")}>Kill Opponent</button>
-                    <button onClick={() => matchManager.addRandomCardToHand("opponent")}>Ajouter une carte à la main (adv)</button>
-                        <button onClick={() => matchManager.addRandomCardToHand("player")}>Ajouter une carte à la main (vous)</button>
+                    {/* <button onClick={() => matchManager.drawCards("opponent", 1)}>Draw opponent</button> */}
+                    {/* <button onClick={() => matchManager.drawCards("player", 1)}>Draw player</button> */}
+                    {/* <button onClick={() => matchManager.killPlayer("player", "emptyDeck")}>Kill Player</button> */}
+                    {/* <button onClick={() => matchManager.killPlayer("opponent", "emptyDeck")}>Kill Opponent</button> */}
+                    {/* <button onClick={() => matchManager.addRandomCardToHand("opponent")}>Ajouter une carte à la main (adv)</button> */}
+                    {/* <button onClick={() => matchManager.addRandomCardToHand("player")}>Ajouter une carte à la main (vous)</button> */}
                 </div>
 
-                {showModalCardFullscreen && <ModalCardFullscreen card={cards[modalCardFullscreen_cardId!]} onModalClosed={removeModal} />}
+                {modalCardFullscreen.isOpen && <ModalCardFullscreen card={allCards[modalCardFullscreen.cardId!]} onModalClosed={hideModalCardFullscreen} />}
             </main>
 
         </ClassicLayout>

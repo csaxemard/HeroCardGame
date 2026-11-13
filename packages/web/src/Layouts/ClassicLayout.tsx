@@ -14,6 +14,17 @@ interface Props {
 
 
 
+/**
+ * ### ClassicLayout
+ * - Un layout pour une page simple avec un header, du contenu et un footer
+ * - Children : Le contenu de la page
+ * - Props :
+ *    - `hideFooter?: boolean = false` : Supprime le footer
+ * 
+ * --
+ * 
+ * - Note : Renommer hideFooter en noFooter
+ */
 export default function ClassicLayout({ hideFooter = false, children }: Props) {
     // Context
     const appContext = useContext(AppContext)

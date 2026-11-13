@@ -62,10 +62,10 @@
     line-height: 1.4;
     word-wrap: break-word;
     white-space: break-spaces;
-    animation: fadeIn 0.2s ease;
+    animation: InfosBox-fadeIn 01s ease;
 }
 
-@keyframes fadeIn {
+@keyframes InfosBox-fadeIn {
     from {
         opacity: 0;
         transform: translateY(-5px);

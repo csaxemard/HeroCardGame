@@ -5,12 +5,14 @@ import CardViewer from "./Views/Catalogue";
 import Error404 from "./Views/Error404";
 import Match from "./Views/Match.tsx";
 import Debug from "./Views/Debug.tsx";
+import MyDecks from "./Views/MyDecks.tsx";
 
 
 
 const router = createBrowserRouter([
     { path: "/", Component: Home },
     { path: "/catalogue/:cardId?", Component: CardViewer, },
+    { path: "/decks", Component: MyDecks },
     { path: "/match", Component: Match },
     { path: "/debug", Component: Debug },
     { path: "*", Component: Error404 },

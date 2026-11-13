@@ -34,7 +34,7 @@
                 transition: transform .0s;
             }
             &:not(:last-child):hover .Card {
-                transform: translateY(-50px);
+                transform: translateY(-50px) !important;
                 height: 100%;
             }
         }

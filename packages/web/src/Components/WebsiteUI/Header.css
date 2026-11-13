@@ -56,9 +56,74 @@
         text-decoration: underline var(--emph);
     }
 
+    .hamburgerMenu {
+        display: none;
+        flex-direction: column;
+        gap: 5px;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 8px;
+        transition: var(--transitionDefaults);
+
+        @media (max-width: 1000px) {
+            display: flex;
+        }
+
+        span {
+            width: 25px;
+            height: 3px;
+            background-color: var(--text);
+            border-radius: 2px;
+            transition: transform 0.3s, opacity 0.3s, background-color 0.3s;
+        }
+
+        &.open {
+            span:nth-child(1) {
+                transform: translateY(8px) rotate(45deg);
+            }
+
+            span:nth-child(2) {
+                opacity: 0;
+            }
+
+            span:nth-child(3) {
+                transform: translateY(-8px) rotate(-45deg);
+            }
+        }
+
+        &:hover {
+            span {
+                background-color: var(--linkNavHover);
+            }
+        }
+    }
+
     .navbar {
         display: flex;
         gap: 5px;
+
+        @media (max-width: 1000px) {
+            position: absolute;
+            top: var(--headerHeight);
+            right: 0;
+            left: 0;
+            max-height: 0;
+            overflow: hidden;
+            z-index: 100;
+
+            background-color: var(--bg);
+            transition: var(--transitionDefaults), max-height 0.3s ease-out;
+
+            padding: 0;
+            flex-direction: column;
+            
+            &.open {
+                /* overflow-y: auto; */
+                max-height: 400px;
+                padding: 10px 0;
+            }
+        }
 
         .navDrawer-container:has(.router-link-active) .category,
         .navDrawer-container:has(.router-link-active) .navDrawerItem.router-link-active {
@@ -74,6 +139,11 @@
         background-color: transparent;
         transition: rotate .5s ease-out, var(--transitionDefaults);
         filter: grayscale();
+
+        @media (max-width: 1000px) {
+            order: -1;
+            margin-right: auto;
+        }
 
         &:active {
             rotate: 360deg;
@@ -151,6 +221,20 @@
         /* pos */
         height: 40px;
         padding: 0 15px;
+
+        @media (max-width: 1000px) {
+            height: auto;
+            padding: 12px 20px;
+            width: 100%;
+            justify-content: flex-start;
+            border-radius: 0;
+            font-size: 16px;
+
+            &.navDrawerItem {
+                min-height: auto;
+                padding: 12px 20px;
+            }
+        }
 
         /* prop */
 

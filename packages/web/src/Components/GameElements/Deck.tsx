@@ -1,3 +1,4 @@
+import type { CSSProperties } from "styled-components";
 import Card from "./Card";
 import "./Deck.css"
 
@@ -5,11 +6,12 @@ interface DeckProps {
     /** - Liste des uuids des cardInstances que contient le deck */ cardInstancesUuids: string[],
     /** - Default: false */ isExtraDeck?: boolean,
     /** - Callback exécuté quand on LClick sur le deck */ onClick?: () => void,
+    isClickableMessage?: string,
 }
 
 
 
-export default function Deck({ cardInstancesUuids, isExtraDeck = false, onClick, }: DeckProps) {
+export default function Deck({ cardInstancesUuids, isExtraDeck = false, onClick, isClickableMessage, }: DeckProps) {
     const isClickable = !!onClick;
     const visibleCards = cardInstancesUuids.slice(0, 5);
     const offset = isExtraDeck ? -3 : 3;
@@ -27,7 +29,11 @@ export default function Deck({ cardInstancesUuids, isExtraDeck = false, onClick,
         >
             <div className="cardsStack">
                 {visibleCards.map((uuid, i) => (
-                    <div key={uuid} className="Deck-cardContainer" style={{ transform: `translate(${i * offset}px, ${i * 3}px)` }}>
+                    <div
+                        key={uuid}
+                        className="Deck-cardContainer"
+                        style={{ transform: `translate(${i * offset}px, ${i * 3}px)`, "--isClickableMessage": `'${isClickableMessage}'`, } as CSSProperties}
+                    >
                         <Card cardId={0} cardInstanceUuid={uuid} isFaceDown isExtra={isExtraDeck} />
                         {i == visibleCards.length - 1 &&
                             <span className="numberOfCards">{cardInstancesUuids.length}</span>

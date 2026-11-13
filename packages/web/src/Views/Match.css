@@ -50,6 +50,7 @@
             align-items: center;
             justify-content: center;
             gap: 20px;
+
             &.hideModalMatchEnd {
                 backdrop-filter: none;
             }
@@ -59,7 +60,7 @@
                 border: 2px solid var(--bgColoredPurpleTop1);
                 outline: 5px solid var(--bgColoredOrange);
             }
-            
+
             .message {
                 padding: 20px;
                 border-radius: 12px;
@@ -117,6 +118,10 @@
         flex-direction: column;
         gap: 20px;
         align-items: center;
+
+        button {
+            scale: 1 !important;
+        }
     }
 
     .decidingFirstPlayer, .Board, .InfosBox {
@@ -125,6 +130,3 @@
 
 
 }
-
-
-
