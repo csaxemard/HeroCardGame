@@ -31,7 +31,11 @@ lerna-debug.log*
 *.lnk
 
 packages/web/public/cards*/
+packages/web/public/cardArtworks*/
 z-resources/ClaudeCardGameExample/
 z-resources/TestWebMobile/
 z-resources/heroCards*
+z-resources/heroPhotoshopFiles/
+z-resources/heroCardDesignElements/
+z-resources/*.url
 vercelDist/

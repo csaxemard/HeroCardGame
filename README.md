@@ -1,5 +1,5 @@
 # Hero Card Game
-v0.3.1
+v0.3.2
 
 
 ## Concept
@@ -15,14 +15,19 @@ Plateformes cibles : Web et mobile
 <details><summary><h2 style="display: inline-block; width: 90%;">Liste de tâches</h2></summary>
 
 ### Actuelles
-- 🔹 (PrototypeMatchStuff) Reconstruire des prototypes de cartes fonctionnels pour les catégories (principales, pas champion)
+- 🔹 (PrototypeMatch) fix: Le texte des cartes ne s'adapte pas à leur taille
+    - + Change style pour ressembler plus à l'original
     - Je viens de reprendre le projet, après une pause depuis la présentation pour mon projet de fin de licence.
     - Mon but actuel c'est de refaire une vraie partie simple. Donc je fais sans les images mais avec les bonnes données et interactions
 
 ### Suivantes
-- PrototypeMatchStuff
+- (PrototypeMatch) Traduire en JSX les autres designs de cartes (types, categories)
+
+### Idées
 - Bugs
     - (web/Card) fix: removeEventListener("keydown", handleEscape) not working in ModalCardFullscreen
+    - (web/PrototypeMatch) fix : card flickering on first rendering (because it waits for correct cardCurrentWidth to be computed).
+        - Maybee organize card layout via absolute and left: px like duelingbook instead of percentages
 - Config
     - (web/Board) refactor: Deck et Graveyard doivent render des Card (avec isFaceDown si besoin), pas juste des img
         - Peut-être faire un composant FaceDownCard ?
@@ -64,6 +69,7 @@ Plateformes cibles : Web et mobile
     - Ajouter des animations sympas
     - Tooltip recording mouse maintain on card (spinner ? [spinners](https://cssloaders.github.io/)), ou bien Rclick simple
     - Apparence du Deck : plus tard je ferai que le composant deck son apparence c’est une pile de cardBack, exactement le nombre de cartes restantes, avec pour chacune un rotate randIntInRange btwn 1 et -1, peut-être une ombre mais c’est trop demandé. Et aussi une anim de mélange du deck.
+    - Demander à Gricha l'image cardback des cartes Hero
 - Deck builder
     - Choisir sleeves deck (main deck et extra deck) + Upload custom sleeves
 </details>

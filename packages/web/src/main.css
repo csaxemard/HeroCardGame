@@ -1,3 +1,11 @@
+/* Fonts */
+
+@font-face {
+    font-family: Candara;
+    src: url(/fonts/Candara.ttf);
+}
+
+
 /* Vars */
 
 #app {
