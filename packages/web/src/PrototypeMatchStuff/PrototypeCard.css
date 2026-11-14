@@ -6,11 +6,12 @@
 
     position: relative;
     aspect-ratio: 2142 / 2992;
+    height: 100%;
+    /* width: 100%; */
     max-height: 100%;
     max-width: 100%;
     overflow: hidden;
 
-    margin: 20px auto;
     background-color: var(--typeBgColor, #555);
     border-radius: calc(var(--cardCurrentWidth) / 35);
 
@@ -69,7 +70,6 @@
             height: var(--bordersWidth);
             width: 30%;
             background-image: linear-gradient(to right, var(--typeBorderColor), #fff0 100%);
-
         }
 
         &::after {
@@ -143,7 +143,7 @@
 
             box-shadow: 0 0 5px #0009;
             border: var(--bordersWidth) solid var(--typeBorderColor);
-            clip-path: inset(0px -10px -10px -10px);
+            clip-path: inset(-.3px -10px -10px -10px);
         }
 
         .starsContainer {
@@ -164,6 +164,7 @@
                 width: 10%;
 
                 background-image: url(/cardDesignElements/star.png);
+                background-repeat: no-repeat;
                 background-size: contain;
                 border-radius: 100%;
                 box-shadow: 0 0 5px #0009, inset 0 0 3px 2px #0004;

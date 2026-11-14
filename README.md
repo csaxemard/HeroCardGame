@@ -1,5 +1,5 @@
 # Hero Card Game
-v0.3.2
+v0.3.3
 
 
 ## Concept
@@ -72,6 +72,8 @@ Plateformes cibles : Web et mobile
     - Demander à Gricha l'image cardback des cartes Hero
 - Deck builder
     - Choisir sleeves deck (main deck et extra deck) + Upload custom sleeves
+- Paramètres
+    - Proposer une option pour afficher un chiffre indiquant le nombre d'étoiles sur les cartes, pour les gens qui perdent le fil
 </details>
 
 <br>

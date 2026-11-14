@@ -1,4 +1,4 @@
-import type { PrototypeCard_Type } from "./prototypeMatchStuffTypes"
+import type { PrototypeCard_Type, PrototypeCardCategories_Type } from "./prototypeMatchStuffTypes"
 import "./PrototypeCard.css"
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
@@ -10,12 +10,20 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
  *     - `card: PrototypeCardType`
  */
 export default function PrototypeCard({ card, canDescriptionOverflow = true }: { card: PrototypeCard_Type, canDescriptionOverflow?: boolean }) {
+    if (!card) {
+        alert("Erreur : Tentative d'affichage d'une carte inexistante.\n[PrototypeCard.tsx]")
+        console.error("Erreur : Tentative d'affichage d'une carte inexistante.\n[PrototypeCard.tsx]")
+        return (
+            <div className={"prototypeCard"} data-error>Pas de carte ici</div>
+        )
+    };
+
     const cardTypesDesignElements = {
         icons: { eau: "🌊", feu: "🔥", force: "⚔️", magie: "🌀", multicolore: "🌈", plante: "🌳", vent: "🪽" },
-        backgroundColors: { eau: "#00162f", feu: "#5d1515", force: "#652b02", magie: "#965081", multicolore: "#782592", plante: "#1d5905", vent: "#a5771d" },
-        innerBackgroundColorsGradientStart: { eau: "#497cb6", feu: "#5d1515", force: "#652b02", magie: "#965081", multicolore: "#782592", plante: "#1d5905", vent: "#a5771d" },
-        innerBackgroundColorsGradientEnd: { eau: "#032654", feu: "#5d1515", force: "#652b02", magie: "#965081", multicolore: "#782592", plante: "#1d5905", vent: "#a5771d" },
-        borderColors: { eau: "#01356f", feu: "#5d1515", force: "#652b02", magie: "#965081", multicolore: "#782592", plante: "#1d5905", vent: "#a5771d" },
+        backgroundColors: { eau: "#00162f", feu: "#5d1515", force: "#321000", magie: "#320d27", multicolore: "#fff", plante: "#0c2b01", vent: "#844800" },
+        innerBackgroundColorsGradientStart: { eau: "#497cb6", feu: "#cb4141", force: "#b77647", magie: "#a45f8f", multicolore: "#ff90fb", plante: "#4b992c", vent: "#d09a00" },
+        innerBackgroundColorsGradientEnd: { eau: "#032654", feu: "#430001", force: "#652b02", magie: "#3d042a", multicolore: "#fff", plante: "#124100", vent: "#9f6600" },
+        borderColors: { eau: "#01356f", feu: "#880101", force: "#652b02", magie: "#430731", multicolore: "#fff", plante: "#185501", vent: "#c66a00" },
     };
     const cardCollectionsAcronyms = { "Les Armes de Légende": "ARLE", "L'Art des Maîtres": "ARMA", "Le Secret des Limbes": "SELI", "Rainbowgeddon": "RAIN", "Wings of Destiny": "WOD" };
 
@@ -83,7 +91,7 @@ export default function PrototypeCard({ card, canDescriptionOverflow = true }: {
                 <span className="family">/{card.family}</span>
 
                 <div className="bottomInfos">
-                    {card.category == "artefact" &&
+                    {(["artefact", "demiHeros", "combattant", "multiHeros", "terrain", "darkHeros"] as PrototypeCardCategories_Type[]).includes(card.category) &&
                         <p className="description" style={{ overflow: canDescriptionOverflow ? "auto" : "hidden" }}>
                             {card.description}
                         </p>

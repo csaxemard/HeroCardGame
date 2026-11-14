@@ -3,6 +3,9 @@ import Card from "../Components/GameElements/Card"
 import { useNavigate, useParams } from "react-router"
 import { allCards } from "@/cards"
 import styled from "styled-components"
+import { useState } from "react"
+import PrototypeCard from "@/PrototypeMatchStuff/PrototypeCard"
+import { prototypeCards } from "@/PrototypeMatchStuff/AllPrototypeCards"
 
 
 
@@ -33,20 +36,36 @@ export default function CardViewer() {
         <option key={card.name} value={cardId}>{card.name}</option>
     ));
 
+    const [legacyOrJSX, set_legacyOrJSX] = useState("legacy")
+
+    function handleRadioChange(e: any) { set_legacyOrJSX(_ => e.target.value) }
+
 
 
     return (
         <ClassicLayout>
             <StyledMain className="CardViewer offsetTop centered">
-                {cardIdValidation.success && <Card cardId={cardIdValidation.cardId!} imgResolution={1000} />}
-                {!cardIdValidation.success && cardIdValidation.errorJSX}
+                {(legacyOrJSX == "legacy") ? <>
+                    {cardIdValidation.success && <Card cardId={cardIdValidation.cardId!} imgResolution={1000} />}
+                    {!cardIdValidation.success && cardIdValidation.errorJSX}
+                </> : <>
+                    {cardIdValidation.success && <PrototypeCard card={prototypeCards[cardIdValidation.cardId!]} />}
+                    {!cardIdValidation.success && cardIdValidation.errorJSX}
+                </>
+                }
 
                 <form>
-                    <span>Choisir une autre carte : </span>
-                    <select name="newCardId" id="newCardId" value={`${cardIdValidation.cardId ?? ""}`} onChange={changeViewedCard}>
-                        <option value="" disabled>--- Choisissez une carte ---</option>
-                        {cardListJSX}
-                    </select>
+                    <div>
+                        <span>Choisir une autre carte : </span>
+                        <select name="newCardId" id="newCardId" value={`${cardIdValidation.cardId ?? ""}`} onChange={changeViewedCard}>
+                            <option value="" disabled>--- Choisissez une carte ---</option>
+                            {cardListJSX}
+                        </select>
+                    </div>
+                    <div className="radios">
+                        <label>Legacy<input type="radio" name="legacyOrJsx" value="legacy" checked={legacyOrJSX === "legacy"} onChange={handleRadioChange} /></label>
+                        <label>JSX<input type="radio" name="legacyOrJsx" value="jsx" checked={legacyOrJSX === "jsx"} onChange={handleRadioChange} /></label>
+                    </div>
                 </form>
             </StyledMain>
         </ClassicLayout>
@@ -90,7 +109,27 @@ const StyledMain = styled.main`
         }
     }
 
-    form {
+    form  {
+        display: flex;
+        width: 100%;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 30px;
+        
+        .radios {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            gap: 50px;
+
+            label {
+            display: flex;
+            gap: 10px;
+            }
+        }
+    }
+    form > div:first-child {
         display: flex;
         align-items: center;
         gap: 10px;

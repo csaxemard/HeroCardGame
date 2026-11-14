@@ -101,7 +101,7 @@ export const prototypeCards: Record<number, PrototypeCard_Type> = {
     98: { id: 98, name: "Esprit du Phœnix", category: "combattant", family: "Totam", type: "feu", stars: 5, baseAtk: 700, baseDef: 600, collection: "Wings of Destiny" },
     99: { id: 99, name: "Main Divine des Origines", category: "artefact", family: "Origines", type: "magie", stars: 10, collection: "Wings of Destiny" },
     100: { id: 100, name: "Noûs", category: "heros", family: "Origines", type: "multicolore", stars: 1, baseAtk: 0, baseDef: 0, collection: "Wings of Destiny" },
-    101: { id: 101, name: "Dark Noûs", category: "darkHeros", family: "Origines", type: "multicolore", stars: 10, baseAtk: 4000, baseDef: 4000, collection: "Wings of Destiny" },
+    101: { id: 101, name: "Dark Noûs, Chaos Suprême", category: "darkHeros", family: "Origines", type: "multicolore", stars: 10, baseAtk: 4000, baseDef: 4000, description: "[Uniquement invocable sur un Héros /Origines]", collection: "Wings of Destiny" },
     102: { id: 102, name: "Neri, Prêtresse des Noûs", category: "artefact", family: "Origines", type: "magie", stars: 8, collection: "Wings of Destiny" },
     103: { id: 103, name: "Bouclier du Soleil", category: "artefact", family: "", type: "force", stars: 4, collection: "Wings of Destiny" },
     104: { id: 104, name: "Forêt de Luminos", category: "terrain", family: "", type: "plante", stars: 1, collection: "Wings of Destiny" },
